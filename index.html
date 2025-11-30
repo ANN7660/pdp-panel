@@ -1,550 +1,244 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>pdp panel V1</title>
-<style>
-  :root{
-    --bg1:#0b1020;
-    --bg2:#071427;
-    --card:#0f1728;
-    --muted:#9aa6bf;
-    --accent:#7c3aed;
-    --accent-2:#4f46e5;
-    --glass: rgba(255,255,255,0.04);
-    --radius:14px;
-    --maxw:1200px;
-    --success:#10b981;
-    --danger:#ef4444;
-    font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    min-height:100%;
-    background: linear-gradient(135deg,var(--bg2),#032033 80%);
-    color: #e9eefc;
-    padding:20px;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-  }
+# scraper_pinterest.py
+# À ajouter dans votre projet pour VRAIMENT scraper Pinterest avec Selenium
 
-  .wrap{max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:18px;}
+import time
+import re
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+import logging
 
-  /* Header */
-  header.app{
-    display:flex;align-items:center;justify-content:space-between;
-    background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);
-    border-radius:var(--radius);padding:18px 22px;backdrop-filter:blur(6px);
-    box-shadow: 0 8px 40px rgba(2,6,23,0.6);
-  }
-  .brand{display:flex;align-items:center;gap:14px}
-  .brand-logo{
-    width:56px;height:56px;border-radius:12px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(79,70,229,0.12);
-  }
-  .brand-title{
-    display:flex;flex-direction:column;line-height:1;
-  }
-  .brand-title .title-main{font-size:18px;font-weight:700;color:var(--accent);}
-  .brand-title .title-sub{font-size:12px;color:var(--muted);margin-top:4px}
-  nav.topnav{display:flex;gap:12px;align-items:center}
-  .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px 14px;border-radius:10px;color:inherit;cursor:pointer}
-  .nav-btn.active{background:linear-gradient(90deg,rgba(124,58,237,0.12),rgba(99,102,241,0.06));border-color:rgba(124,58,237,0.18)}
+logger = logging.getLogger(__name__)
 
-  /* status */
-  .status{
-    display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:var(--glass);
-  }
-  .status-dot{width:12px;height:12px;border-radius:50%;background:#9ca3af;box-shadow:0 0 8px rgba(0,0,0,0.3)}
-  .status-text{font-size:13px;color:var(--muted)}
+def scrape_pinterest_with_selenium(url, limit=1000, scroll_pause=2):
+    """
+    Scrappe Pinterest avec Selenium pour récupérer VRAIMENT toutes les images
+    
+    Args:
+        url: URL de recherche Pinterest (ex: https://www.pinterest.fr/search/pins/?q=anime%20girl)
+        limit: Nombre max d'images à récupérer (défaut 1000)
+        scroll_pause: Temps d'attente entre chaque scroll (secondes)
+    
+    Returns:
+        Liste d'URLs d'images uniques
+    """
+    
+    # Configuration Chrome headless (sans interface)
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')  # Mode sans fenêtre
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--window-size=1920,1080')
+    chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+    
+    driver = None
+    image_urls = set()  # Set pour éviter les doublons automatiquement
+    
+    try:
+        logger.info(f"Démarrage scraping Pinterest: {url} (limite: {limit})")
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get(url)
+        
+        # Attendre que la page charge
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.presence_of_element_all_located((By.TAG_NAME, "img")))
+        
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        scroll_attempts = 0
+        max_scroll_attempts = 50  # Limite pour éviter boucle infinie
+        
+        while len(image_urls) < limit and scroll_attempts < max_scroll_attempts:
+            # Scroll vers le bas
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(scroll_pause)
+            
+            # Extraire les images actuellement visibles
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            
+            # Méthode 1: Chercher les images dans <img>
+            for img in soup.find_all('img'):
+                src = img.get('src') or img.get('srcset')
+                if src:
+                    # Extraire l'URL principale si srcset
+                    if ',' in src:
+                        src = src.split(',')[0].strip().split(' ')[0]
+                    
+                    # Filtrer uniquement les vraies images Pinterest
+                    if 'pinimg.com' in src and 'x/' not in src:  # Éviter les placeholders
+                        # Prendre la version haute qualité (736x au lieu de 236x)
+                        src = src.replace('/236x/', '/736x/')
+                        image_urls.add(src)
+            
+            # Méthode 2: Regex sur tout le HTML pour trouver les URLs i.pinimg.com
+            urls_found = re.findall(r'https://i\.pinimg\.com/[^"\'>\s]+', driver.page_source)
+            for u in urls_found:
+                # Prendre version haute qualité
+                u = u.replace('/236x/', '/736x/')
+                if '/736x/' in u or '/originals/' in u:
+                    image_urls.add(u)
+            
+            logger.info(f"Images trouvées: {len(image_urls)}/{limit}")
+            
+            # Vérifier si on a atteint le bas de la page
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                scroll_attempts += 1
+                if scroll_attempts >= 3:
+                    logger.info("Fin de page atteinte")
+                    break
+            else:
+                scroll_attempts = 0
+            
+            last_height = new_height
+            
+            # Pause si on a assez d'images
+            if len(image_urls) >= limit:
+                break
+        
+        # Convertir set en liste et limiter
+        final_urls = list(image_urls)[:limit]
+        logger.info(f"Scraping terminé: {len(final_urls)} images récupérées")
+        return final_urls
+        
+    except Exception as e:
+        logger.exception(f"Erreur scraping Pinterest: {e}")
+        return list(image_urls)  # Retourner ce qu'on a pu récupérer
+        
+    finally:
+        if driver:
+            driver.quit()
 
-  /* main */
-  main.container{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
-  aside.sidebar{
-    border-radius:var(--radius);padding:18px;background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));
-    min-height:320px;box-shadow:0 8px 30px rgba(2,6,23,0.6);
-  }
-  .menu-group{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-  .menu-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
-  .menu-item.active{background:linear-gradient(90deg,rgba(124,58,237,0.12),rgba(99,102,241,0.08));border-color:rgba(124,58,237,0.22);color: #fff}
-  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.02)}
-  .card h3{font-size:16px;margin-bottom:10px}
-  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .stat{padding:12px;border-radius:10px;background:var(--glass);text-align:center}
-  .stat .num{font-weight:700;font-size:20px}
-  .controls{display:flex;flex-direction:column;gap:10px}
-  .form-label{font-size:13px;color:var(--muted);margin-bottom:6px}
-  input[type="text"],input[type="password"],input[type="number"],select,textarea{
-    width:100%;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit;
-  }
-  .btn{
-    display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:white;cursor:pointer;
-  }
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-  .btn.warn{background:linear-gradient(90deg,#f59e0b,#f97316)}
-  .grid-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:12px}
-  .img-card{background:var(--glass);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column}
-  .img-card img{width:100%;height:150px;object-fit:cover;display:block}
-  .img-meta{padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .img-meta .meta-left{font-size:13px;color:var(--muted)}
-  .img-meta .meta-right button{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
 
-  .progress{height:16px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
-  .progress > .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--success),#34d399);transition:width .25s}
-
-  .filters{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;background:transparent;color:var(--muted)}
-  .chip.active{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.22);color:#fff}
-
-  /* dashboard inputs */
-  .dash-row{display:grid;grid-template-columns:1fr 220px;gap:12px;align-items:center;margin-bottom:12px}
-  .range-wrap{display:flex;align-items:center;gap:12px}
-  .range-wrap input[type=range]{flex:1}
-  .range-value{min-width:64px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);text-align:center}
-
-  /* logs */
-  .log-console{height:300px;overflow:auto;padding:12px;border-radius:10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.03);font-family:monospace;font-size:13px;color:var(--muted)}
-
-  /* small screens */
-  @media (max-width:980px){
-    main.container{grid-template-columns:1fr;min-height:0}
-    aside.sidebar{order:2}
-    .brand-title .title-main{font-size:16px}
-  }
-
-  /* simple animations */
-  .fade-in{animation:fadeIn .28s ease both}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-</style>
-</head>
-<body>
-  <div class="wrap">
-
-    <!-- header -->
-    <header class="app fade-in" role="banner">
-      <div class="brand">
-        <div class="brand-logo">PDP</div>
-        <div class="brand-title">
-          <div class="title-main">pdp panel V1</div>
-          <div class="title-sub">image search · profile manager</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;align-items:center">
-        <nav class="topnav" aria-label="Main navigation">
-          <button class="nav-btn active" data-target="home" onclick="navigate(event)">accueil</button>
-          <button class="nav-btn" data-target="explain" onclick="navigate(event)">explication</button>
-          <button class="nav-btn" data-target="dashboard" onclick="navigate(event)">dashboard</button>
-          <button class="nav-btn" data-target="logs" onclick="navigate(event)">logs</button>
-        </nav>
-
-        <div style="width:12px"></div>
-
-        <div class="status" title="etat du bot">
-          <div class="status-dot" id="statusDot"></div>
-          <div class="status-text" id="statusText">vérification...</div>
-        </div>
-      </div>
-    </header>
-
-    <!-- main -->
-    <main class="container" role="main">
-
-      <!-- left: sidebar -->
-      <aside class="sidebar fade-in" aria-label="Sidebar">
-        <div class="card">
-          <h3>Navigation</h3>
-          <div class="menu-group" id="menu">
-            <div class="menu-item active" data-page="home" onclick="openPage('home')">Accueil</div>
-            <div class="menu-item" data-page="explain" onclick="openPage('explain')">Explication</div>
-            <div class="menu-item" data-page="dashboard" onclick="openPage('dashboard')">Dashboard</div>
-            <div class="menu-item" data-page="logs" onclick="openPage('logs')">Logs</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Statistiques</h3>
-          <div class="stat-grid">
-            <div class="stat"><div class="num" id="statTotal">—</div><div style="font-size:12px;color:var(--muted)">Total images</div></div>
-            <div class="stat"><div class="num" id="statPending">—</div><div style="font-size:12px;color:var(--muted)">Pending</div></div>
-            <div class="stat"><div class="num" id="statSent">—</div><div style="font-size:12px;color:var(--muted)">Sent</div></div>
-            <div class="stat"><div class="num" id="statBot">—</div><div style="font-size:12px;color:var(--muted)">Bot</div></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Quick actions</h3>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn" onclick="openPage('dashboard'); focusInput('pinUrl')">Importer depuis Pinterest</button>
-            <button class="btn ghost" onclick="openPage('dashboard'); focusInput('googleUrl')">Importer depuis Google</button>
-            <button class="btn ghost" onclick="refreshAll()">Rafraîchir</button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- right: content -->
-      <section style="min-height:400px;">
-
-        <!-- HOME -->
-        <div id="home" class="card page fade-in">
-          <h3>accueil</h3>
-          <p style="color:var(--muted);margin-top:8px">Bienvenue — connecte ton compte Discord pour autoriser le panel. Après connexion tu pourras importer des images depuis Pinterest ou Google, choisir une catégorie et définir un nombre d'images (1–1000).</p>
-          <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
-            <button class="btn" onclick="startDiscordOAuth()">connexion discord</button>
-            <button class="btn ghost" onclick="openPage('explain')">explication</button>
-            <button class="btn" onclick="openPage('dashboard')">aller au dashboard</button>
-          </div>
-
-          <div style="margin-top:16px" id="homeCategories">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-              <div class="chip" onclick="setFilter('all')">toutes</div>
-              <div class="chip" onclick="setFilter('boy')">boy</div>
-              <div class="chip" onclick="setFilter('girl')">girl</div>
-              <div class="chip" onclick="setFilter('anime')">animé</div>
-              <div class="chip" onclick="setFilter('pdp')">pdp</div>
-              <div class="chip" onclick="setFilter('match')">match</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- EXPLAIN -->
-        <div id="explain" class="card page" style="display:none">
-          <h3>explication</h3>
-          <div style="color:var(--muted);margin-top:10px;line-height:1.6">
-            <p><strong>Connexion Discord :</strong> clique sur « connexion discord ». Le flux OAuth2 (identify + guilds.join) récupèrera les informations de l'utilisateur et, si autorisé, permettra d'ajouter automatiquement l'utilisateur aux serveurs où le bot est présent.</p>
-
-            <p><strong>Importer depuis Pinterest :</strong> copiez l'URL d'un board / search / pin et collez-la dans le dashboard → sélectionnez la catégorie → choisissez le nombre (1-1000) → cliquez sur importer. Le backend scrappe la page et stocke les URLs en base.</p>
-
-            <p><strong>Importer depuis Google :</strong> vous pouvez coller une URL de résultats Google Images (ou une query). Le scraping Google est fragile — pour un usage en production il est recommandé d'utiliser une API (SerpAPI ou Google CSE).</p>
-
-            <p><strong>Dashboard et bot :</strong> une fois connecté, le bot renverra les images via la commande Discord (par ex. <code>!pdp girl</code>). Le panneau affiche les logs, le statut et les totaux.</p>
-          </div>
-        </div>
-
-        <!-- DASHBOARD -->
-        <div id="dashboard" class="card page" style="display:none">
-          <h3>dashboard</h3>
-
-          <!-- Pinterest block -->
-          <div style="margin-top:8px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div style="font-weight:600;color:var(--accent)">Pinterest</div>
-              <div style="font-size:13px;color:var(--muted)">max 1000 images / import</div>
-            </div>
-
-            <div class="dash-row" style="margin-top:12px">
-              <input id="pinUrl" type="text" placeholder="collez ici l'url pinterest" />
-              <select id="pinCat">
-                <option value="boy">boy</option>
-                <option value="girl">girl</option>
-                <option value="anime">animé</option>
-                <option value="pdp">pdp</option>
-                <option value="match">match</option>
-              </select>
-            </div>
-
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-              <div style="flex:1" class="range-wrap">
-                <input id="pinRange" type="range" min="1" max="1000" value="50" />
-              </div>
-              <div class="range-value" id="pinCount">50</div>
-            </div>
-
-            <div style="display:flex;gap:12px">
-              <button class="btn" id="pinUploadBtn" onclick="doScrape('pinterest')">importer depuis pinterest</button>
-              <button class="btn ghost" onclick="simulateProgress('pin')">simuler</button>
-            </div>
-            <div style="margin-top:10px" class="progress" aria-hidden="true"><div class="bar" id="pinProgress"></div></div>
-          </div>
-
-          <!-- Google block -->
-          <div style="margin-top:16px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div style="font-weight:600;color:var(--accent)">Google Images</div>
-              <div style="font-size:13px;color:var(--muted)">max 1000 images / import</div>
-            </div>
-
-            <div class="dash-row" style="margin-top:12px">
-              <input id="googleUrl" type="text" placeholder="collez ici l'url google images ou une query" />
-              <select id="googleCat">
-                <option value="boy">boy</option>
-                <option value="girl">girl</option>
-                <option value="anime">animé</option>
-                <option value="pdp">pdp</option>
-                <option value="match">match</option>
-              </select>
-            </div>
-
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-              <div style="flex:1" class="range-wrap">
-                <input id="googleRange" type="range" min="1" max="1000" value="50" />
-              </div>
-              <div class="range-value" id="googleCount">50</div>
-            </div>
-
-            <div style="display:flex;gap:12px">
-              <button class="btn" id="googleUploadBtn" onclick="doScrape('google')">importer depuis google</button>
-              <button class="btn ghost" onclick="simulateProgress('google')">simuler</button>
-            </div>
-            <div style="margin-top:10px" class="progress"><div class="bar" id="googleProgress"></div></div>
-          </div>
-
-        </div>
-
-        <!-- LOGS -->
-        <div id="logs" class="card page" style="display:none">
-          <h3>logs</h3>
-          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-            <button class="btn" onclick="loadLogs(true)">rafraîchir</button>
-            <div style="color:var(--muted);font-size:13px;margin-left:10px">les logs sont mis à jour automatiquement toutes les 6s</div>
-          </div>
-          <div style="margin-top:12px" id="logConsole" class="log-console" aria-live="polite">Chargement des logs...</div>
-        </div>
-
-      </section>
-    </main>
-
-    <footer style="text-align:center;color:var(--muted);font-size:13px;padding:8px">pdp panel V1 • connecté au backend</footer>
-  </div>
-
-<script>
-/*
-  Single-page panel script
-  - Change API_URL to point to your backend (example: https://pfpbot-8e9l.onrender.com)
-  - OAuth link expects backend path /oauth/authorize (replace if different)
-*/
-const API_URL = (function(){
-  // default fallback to same host
-  const host = window.location.origin;
-  return host; // replace here if your API is elsewhere: e.g. 'https://my-backend.example'
-})();
-
-/* --- Utilities --- */
-const qs = (s, ctx=document) => ctx.querySelector(s);
-const qsa = (s, ctx=document) => Array.from(ctx.querySelectorAll(s));
-function el(tag, attrs={}, txt=''){ const e=document.createElement(tag); Object.assign(e, attrs); if(txt) e.textContent = txt; return e; }
-
-/* --- Navigation --- */
-function navigate(e){
-  const t = e.currentTarget || e.target;
-  const target = t.dataset.target;
-  openPage(target);
-  qsa('.nav-btn').forEach(b => b.classList.toggle('active', b===t));
-}
-function openPage(name){
-  qsa('.page').forEach(p => p.style.display = (p.id===name ? 'block' : 'none'));
-  // sidebar highlight
-  qsa('.menu-item').forEach(m => m.classList.toggle('active', m.dataset.page===name));
-  // scroll top
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function startDiscordOAuth(){
-  // Redirect user to backend authorize endpoint (backend should redirect to Discord)
-  window.location.href = API_URL + '/oauth/authorize';
-}
-function focusInput(id){
-  setTimeout(()=>{ const el=qs('#'+id); if(el) el.focus(); }, 200);
-}
-
-/* --- Status polling --- */
-async function updateBotStatus(){
-  try{
-    const resp = await fetch(API_URL + '/health', {cache:'no-store'});
-    if(!resp.ok) throw new Error('no');
-    const data = await resp.json();
-    const ok = data.status === 'ok' || data.bot_ready === true || data.status === 'online';
-    qs('#statusText').textContent = ok ? 'bot : connecté' : 'bot : hors-ligne';
-    qs('#statusDot').style.background = ok ? getComputedStyle(document.documentElement).getPropertyValue('--success').trim() || '#10b981' : getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ef4444';
-    qs('#statBot').textContent = ok ? 'OK' : 'HORS';
-    // update small stats
-    if(data.pending !== undefined) qs('#statPending').textContent = data.pending;
-  }catch(err){
-    qs('#statusText').textContent = 'bot : erreur';
-    qs('#statusDot').style.background = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ef4444';
-    qs('#statBot').textContent = 'ERR';
-  }
-}
-setInterval(updateBotStatus, 5000);
-updateBotStatus();
-
-/* --- Stats loader --- */
-async function loadStats(){
-  try{
-    const r = await fetch(API_URL + '/stats', {cache:'no-store'});
-    if(!r.ok) return;
-    const js = await r.json();
-    qs('#statTotal').textContent = js.total ?? '—';
-    if(js.by_category){
-      // not exhaustive
+def scrape_pinterest_simple(url, limit=200):
+    """
+    Version simplifiée sans Selenium (celle que vous avez actuellement)
+    Garde pour fallback si Selenium ne marche pas
+    """
+    import requests
+    from bs4 import BeautifulSoup
+    
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
-  }catch(e){}
-}
-loadStats();
+    
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=15)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, 'html.parser')
+        
+        urls = set()
+        
+        # Meta tags
+        for m in soup.find_all('meta', {"property": "og:image"}):
+            urls.add(m.get('content'))
+        
+        # Images
+        for img in soup.find_all('img'):
+            src = img.get('src') or img.get('data-src')
+            if src and 'pinimg.com' in src:
+                src = src.replace('/236x/', '/736x/')
+                urls.add(src)
+        
+        # Regex
+        found = re.findall(r'https://i\.pinimg\.com/[^"\'>\s]+', r.text)
+        for u in found:
+            u = u.replace('/236x/', '/736x/')
+            if '/736x/' in u or '/originals/' in u:
+                urls.add(u)
+        
+        return list(urls)[:limit]
+        
+    except Exception as e:
+        logger.exception(f"Erreur scraping simple: {e}")
+        return []
 
-/* --- Range UI --- */
-function wireRanges(){
-  const pinRange = qs('#pinRange'), pinCount = qs('#pinCount');
-  const gRange = qs('#googleRange'), gCount = qs('#googleCount');
-  if(pinRange && pinCount){
-    pinCount.textContent = pinRange.value;
-    pinRange.oninput = e => pinCount.textContent = e.target.value;
-  }
-  if(gRange && gCount){
-    gCount.textContent = gRange.value;
-    gRange.oninput = e => gCount.textContent = e.target.value;
-  }
-}
-wireRanges();
 
-/* --- Scrape actions --- */
-async function doScrape(source){
-  try{
-    if(source==='pinterest'){
-      const url = qs('#pinUrl').value.trim();
-      const category = qs('#pinCat').value;
-      const limit = parseInt(qs('#pinRange').value,10) || 50;
-      if(!url){ alert('Entrez une URL Pinterest'); return; }
-      await startImport({url, category, limit, source: 'pinterest'}, 'pin');
-    } else {
-      const url = qs('#googleUrl').value.trim();
-      const category = qs('#googleCat').value;
-      const limit = parseInt(qs('#googleRange').value,10) || 50;
-      if(!url){ alert('Entrez une URL Google'); return; }
-      await startImport({url, category, limit, source: 'google'}, 'google');
-    }
-  }catch(e){
-    console.error(e); addLog('Erreur lancement import: ' + e.message, 'error');
-  }
-}
+# ===================================================================
+# MISE À JOUR DE VOTRE main.py
+# Remplacez la fonction scrape_pinterest par ceci:
+# ===================================================================
 
-async function startImport(payload, key){
-  // UI: progress animate
-  const progressEl = qs('#' + (key==='pin' ? 'pinProgress' : 'googleProgress'));
-  const btn = qs('#' + (key==='pin' ? 'pinUploadBtn' : 'googleUploadBtn'));
-  btn.disabled = true;
-  setProgress(progressEl, 6, 'start');
-  addLog(`Lancement import ${payload.source} (${payload.limit}) pour ${payload.category}`);
-  try{
-    const resp = await fetch(API_URL + '/scrape', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    const js = await resp.json();
-    if(!resp.ok){
-      addLog(`Erreur backend: ${js.error || JSON.stringify(js)}`, 'error');
-      alert('Erreur serveur: ' + (js.error || resp.status));
-    } else {
-      // animate to 90%
-      await animateProgress(progressEl, 90, 800);
-      setProgress(progressEl, 100, 'done');
-      addLog(`Import terminé: inserted=${js.inserted ?? js.count ?? 'n/a'} found=${js.found ?? 'n/a'}`);
-      // refresh stats and logs
-      await loadStats();
-      await loadLogs();
-      alert('Import terminé');
-    }
-  }catch(err){
-    addLog('Erreur import: ' + err.message, 'error');
-    alert('Erreur réseau lors de l import: ' + err.message);
-  }finally{
-    btn.disabled = false;
-    setTimeout(()=>setProgress(progressEl, 0), 700);
-  }
-}
+def scrape_pinterest_smart(url, limit=200, use_selenium=True):
+    """
+    Scrape intelligent: essaie Selenium d'abord, sinon fallback sur requests
+    
+    Args:
+        url: URL Pinterest
+        limit: Nombre d'images max
+        use_selenium: Si True, utilise Selenium (recommandé)
+    
+    Returns:
+        Liste d'URLs d'images
+    """
+    
+    # Si limite > 100, force Selenium car requests ne suffit pas
+    if limit > 100:
+        use_selenium = True
+    
+    if use_selenium:
+        try:
+            logger.info("Tentative scraping avec Selenium...")
+            urls = scrape_pinterest_with_selenium(url, limit)
+            if urls:
+                return urls
+            else:
+                logger.warning("Selenium n'a rien trouvé, fallback vers requests")
+        except Exception as e:
+            logger.warning(f"Selenium a échoué ({e}), fallback vers requests")
+    
+    # Fallback: méthode simple
+    logger.info("Scraping avec requests (limite ~50 images)")
+    return scrape_pinterest_simple(url, min(limit, 200))
 
-/* progress helpers */
-function setProgress(el, val){
-  if(!el) return;
-  el.style.width = (Math.max(0, Math.min(100, val))) + '%';
-}
-function animateProgress(el, target=100, ms=600){
-  return new Promise(res=>{
-    const start = parseFloat(el.style.width)||0;
-    const delta = target - start;
-    const t0 = Date.now();
-    function tick(){
-      const t = Math.min(1,(Date.now()-t0)/ms);
-      el.style.width = Math.round(start + delta*t) + '%';
-      if(t<1) requestAnimationFrame(tick); else res();
-    }
-    tick();
-  });
-}
-function simulateProgress(key){
-  const el = qs('#' + (key==='pin' ? 'pinProgress' : 'googleProgress'));
-  let p=0; setProgress(el,0);
-  const id=setInterval(()=>{ p+=8; setProgress(el,p); if(p>=100){ clearInterval(id); setTimeout(()=>setProgress(el,0),400); } },120);
-}
 
-/* --- Logs --- */
-async function loadLogs(force=false){
-  try{
-    const r = await fetch(API_URL + '/logs?limit=200', {cache:'no-store'});
-    if(!r.ok) throw new Error('logs fail');
-    const js = await r.json();
-    const lines = (js.logs || js).map(l => {
-      const t = l.created_at ? (new Date(l.created_at).toLocaleString()) : '';
-      const lvl = l.level ? '['+l.level+']' : '';
-      const msg = (typeof l.message === 'string') ? l.message : JSON.stringify(l.message);
-      return `${t} ${lvl} ${msg}`;
-    });
-    const box = qs('#logConsole');
-    box.innerHTML = lines.map(s => escapeHtml(s)).join('\n\n');
-    box.scrollTop = box.scrollHeight;
-  }catch(e){
-    const box = qs('#logConsole');
-    box.innerHTML = 'Impossible de charger les logs';
-  }
-}
-function addLog(msg, level='info'){
-  // append locally to console and optionally POST to backend
-  const box = qs('#logConsole');
-  const now = new Date().toLocaleString();
-  const line = `${now} [${level}] ${msg}`;
-  box.innerHTML += (box.innerHTML ? '\n\n' : '') + escapeHtml(line);
-  box.scrollTop = box.scrollHeight;
-  // try to POST small event to backend (non-blocking)
-  fetch(API_URL + '/events', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({level, message: msg})}).catch(()=>{});
-}
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+# ===================================================================
+# EXEMPLE D'UTILISATION dans votre /scrape endpoint
+# ===================================================================
 
-/* auto-refresh logs */
-setInterval(loadLogs, 6000);
-loadLogs();
-
-/* --- Images filter quick helper --- */
-function setFilter(cat){
-  qsa('.chip').forEach(c => c.classList.toggle('active', c.textContent.trim().toLowerCase()===cat || (cat==='all' && c.textContent.trim().toLowerCase()==='toutes')));
-  // open gallery or dashboard - for now just go to dashboard
-  openPage('dashboard');
-}
-
-/* --- Utility: refresh all --- */
-async function refreshAll(){
-  await updateBotStatus();
-  await loadStats();
-  await loadLogs();
-}
-
-/* --- On load --- */
-(function init(){
-  // initial page
-  openPage('home');
-  // wire keyboard: navigate with 1-4
-  document.addEventListener('keydown', (e)=>{
-    if(e.key==='1') openPage('home');
-    if(e.key==='2') openPage('explain');
-    if(e.key==='3') openPage('dashboard');
-    if(e.key==='4') openPage('logs');
-  });
-})();
-
-</script>
-</body>
-</html>
+"""
+@app.route('/scrape', methods=['POST'])
+def scrape_endpoint():
+    data = request.get_json(force=True, silent=True) or {}
+    url = data.get('url')
+    category = (data.get('category') or 'uncategorized').strip()
+    limit = int(data.get('limit') or 50)
+    
+    if not url:
+        return jsonify({"error": "url manquante"}), 400
+    
+    logger.info(f"Scraping: {url} (cat={category} limit={limit})")
+    
+    # NOUVELLE VERSION avec Selenium
+    found = scrape_pinterest_smart(url, limit=limit, use_selenium=True)
+    
+    if not found:
+        return jsonify({"inserted": 0, "found": 0, "message": "Aucune image"}), 200
+    
+    # Insertion en DB (votre code existant)
+    conn = get_db_connection()
+    cur = conn.cursor()
+    inserted = 0
+    
+    for img_url in found:
+        try:
+            cur.execute("SELECT id FROM images WHERE image_url = %s", (img_url,))
+            if cur.fetchone():
+                continue
+            cur.execute(
+                "INSERT INTO images (image_url, category, status) VALUES (%s,%s,%s)",
+                (img_url, category, 'pending')
+            )
+            inserted += 1
+        except:
+            pass
+    
+    conn.commit()
+    cur.close()
+    return_db_connection(conn)
+    
+    return jsonify({"inserted": inserted, "found": len(found)}), 200
+"""
