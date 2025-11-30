@@ -1,65 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>PDP Panel — Complet — Connecté à Render</title>
+<title>pdp panel V1</title>
 <style>
-  /* Reset / base */
   :root{
     --bg1:#0b1020;
-    --bg2:#0f1724;
+    --bg2:#071427;
     --card:#0f1728;
     --muted:#9aa6bf;
     --accent:#7c3aed;
+    --accent-2:#4f46e5;
+    --glass: rgba(255,255,255,0.04);
+    --radius:14px;
+    --maxw:1200px;
     --success:#10b981;
     --danger:#ef4444;
-    --glass: rgba(255,255,255,0.04);
-    --glass-strong: rgba(255,255,255,0.07);
-    --maxw:1200px;
-    --radius:14px;
     font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;}
+  html,body{height:100%}
   body{
     min-height:100%;
-    background:linear-gradient(135deg,var(--bg2),#07203a 80%);
-    color:#ecf0ff;
+    background: linear-gradient(135deg,var(--bg2),#032033 80%);
+    color: #e9eefc;
+    padding:20px;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    padding:24px;
   }
-  .wrap{max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:18px;}
+
+  /* Header */
   header.app{
     display:flex;align-items:center;justify-content:space-between;
     background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);
-    border-radius:var(--radius);padding:18px 20px;backdrop-filter:blur(6px);
-    box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+    border-radius:var(--radius);padding:18px 22px;backdrop-filter:blur(6px);
+    box-shadow: 0 8px 40px rgba(2,6,23,0.6);
   }
   .brand{display:flex;align-items:center;gap:14px}
   .brand-logo{
-    width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#4f46e5);
-    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;
+    width:56px;height:56px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(79,70,229,0.12);
   }
-  .brand h1{font-size:18px;letter-spacing:0.2px}
+  .brand-title{
+    display:flex;flex-direction:column;line-height:1;
+  }
+  .brand-title .title-main{font-size:18px;font-weight:700;color:var(--accent);}
+  .brand-title .title-sub{font-size:12px;color:var(--muted);margin-top:4px}
+  nav.topnav{display:flex;gap:12px;align-items:center}
+  .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px 14px;border-radius:10px;color:inherit;cursor:pointer}
+  .nav-btn.active{background:linear-gradient(90deg,rgba(124,58,237,0.12),rgba(99,102,241,0.06));border-color:rgba(124,58,237,0.18)}
+
+  /* status */
   .status{
     display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:var(--glass);
   }
   .status-dot{width:12px;height:12px;border-radius:50%;background:#9ca3af;box-shadow:0 0 8px rgba(0,0,0,0.3)}
-  nav.tabs{display:flex;gap:10px;flex-wrap:wrap;}
-  button.tab{
-    background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;color:inherit;cursor:pointer;
-  }
-  button.tab.active{background:linear-gradient(90deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));box-shadow:0 6px 18px rgba(0,0,0,0.4);border-color:rgba(255,255,255,0.08)}
+  .status-text{font-size:13px;color:var(--muted)}
+
+  /* main */
   main.container{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
   aside.sidebar{
     border-radius:var(--radius);padding:18px;background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));
     min-height:320px;box-shadow:0 8px 30px rgba(2,6,23,0.6);
   }
   .menu-group{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-  .menu-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
-  .menu-item.active{background:linear-gradient(90deg,rgba(124,58,237,0.12),rgba(99,102,241,0.08));border-color:rgba(124,58,237,0.22)}
+  .menu-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+  .menu-item.active{background:linear-gradient(90deg,rgba(124,58,237,0.12),rgba(99,102,241,0.08));border-color:rgba(124,58,237,0.22);color: #fff}
   .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.02)}
   .card h3{font-size:16px;margin-bottom:10px}
   .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -71,7 +83,7 @@
     width:100%;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit;
   }
   .btn{
-    display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#4f46e5);border:none;color:white;cursor:pointer;
+    display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:white;cursor:pointer;
   }
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
   .btn.warn{background:linear-gradient(90deg,#f59e0b,#f97316)}
@@ -81,694 +93,457 @@
   .img-meta{padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .img-meta .meta-left{font-size:13px;color:var(--muted)}
   .img-meta .meta-right button{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+
   .progress{height:16px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
   .progress > .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--success),#34d399);transition:width .25s}
+
   .filters{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;background:transparent}
-  .chip.active{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.22)}
-  footer.foot{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
-  /* responsive */
+  .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;background:transparent;color:var(--muted)}
+  .chip.active{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.22);color:#fff}
+
+  /* dashboard inputs */
+  .dash-row{display:grid;grid-template-columns:1fr 220px;gap:12px;align-items:center;margin-bottom:12px}
+  .range-wrap{display:flex;align-items:center;gap:12px}
+  .range-wrap input[type=range]{flex:1}
+  .range-value{min-width:64px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);text-align:center}
+
+  /* logs */
+  .log-console{height:300px;overflow:auto;padding:12px;border-radius:10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.03);font-family:monospace;font-size:13px;color:var(--muted)}
+
+  /* small screens */
   @media (max-width:980px){
     main.container{grid-template-columns:1fr;min-height:0}
     aside.sidebar{order:2}
+    .brand-title .title-main{font-size:16px}
   }
+
+  /* simple animations */
+  .fade-in{animation:fadeIn .28s ease both}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header class="app">
+
+    <!-- header -->
+    <header class="app fade-in" role="banner">
       <div class="brand">
         <div class="brand-logo">PDP</div>
-        <div>
-          <h1>PDP Panel — Image Search & Profile Manager</h1>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Connecté au backend Render (auto)</div>
+        <div class="brand-title">
+          <div class="title-main">pdp panel V1</div>
+          <div class="title-sub">image search · profile manager</div>
         </div>
       </div>
 
       <div style="display:flex;gap:12px;align-items:center">
-        <div class="status" id="statusBox">
-          <div class="status-dot" id="statusDot"></div>
-          <div id="statusText">Vérification...</div>
-        </div>
-        <nav class="tabs" id="topTabs" aria-hidden="true" style="display:none">
-          <!-- optional top tabs -->
+        <nav class="topnav" aria-label="Main navigation">
+          <button class="nav-btn active" data-target="home" onclick="navigate(event)">accueil</button>
+          <button class="nav-btn" data-target="explain" onclick="navigate(event)">explication</button>
+          <button class="nav-btn" data-target="dashboard" onclick="navigate(event)">dashboard</button>
+          <button class="nav-btn" data-target="logs" onclick="navigate(event)">logs</button>
         </nav>
+
+        <div style="width:12px"></div>
+
+        <div class="status" title="etat du bot">
+          <div class="status-dot" id="statusDot"></div>
+          <div class="status-text" id="statusText">vérification...</div>
+        </div>
       </div>
     </header>
 
-    <main class="container">
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
+    <!-- main -->
+    <main class="container" role="main">
+
+      <!-- left: sidebar -->
+      <aside class="sidebar fade-in" aria-label="Sidebar">
         <div class="card">
           <h3>Navigation</h3>
           <div class="menu-group" id="menu">
-            <div class="menu-item active" data-page="home" onclick="navigate(event)">
-              <div>Accueil</div>
-            </div>
-            <div class="menu-item" data-page="upload" onclick="navigate(event)">
-              <div>Import Pinterest</div>
-            </div>
-            <div class="menu-item" data-page="gallery" onclick="navigate(event)">
-              <div>Galerie</div>
-            </div>
-            <div class="menu-item" data-page="config" onclick="navigate(event)">
-              <div>Configuration</div>
-            </div>
-            <div class="menu-item" data-page="logs" onclick="navigate(event)">
-              <div>Logs</div>
-            </div>
-            <div class="menu-item" data-page="docs" onclick="navigate(event)">
-              <div>Documentation</div>
-            </div>
+            <div class="menu-item active" data-page="home" onclick="openPage('home')">Accueil</div>
+            <div class="menu-item" data-page="explain" onclick="openPage('explain')">Explication</div>
+            <div class="menu-item" data-page="dashboard" onclick="openPage('dashboard')">Dashboard</div>
+            <div class="menu-item" data-page="logs" onclick="openPage('logs')">Logs</div>
           </div>
         </div>
 
         <div class="card">
           <h3>Statistiques</h3>
           <div class="stat-grid">
-            <div class="stat">
-              <div class="num" id="statTotal">0</div>
-              <div style="font-size:12px;color:var(--muted)">Total images</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="statRotations">0</div>
-              <div style="font-size:12px;color:var(--muted)">Rotations</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="statOnline">?</div>
-              <div style="font-size:12px;color:var(--muted)">Bot</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="statLast">—</div>
-              <div style="font-size:12px;color:var(--muted)">Dernière action</div>
-            </div>
+            <div class="stat"><div class="num" id="statTotal">—</div><div style="font-size:12px;color:var(--muted)">Total images</div></div>
+            <div class="stat"><div class="num" id="statPending">—</div><div style="font-size:12px;color:var(--muted)">Pending</div></div>
+            <div class="stat"><div class="num" id="statSent">—</div><div style="font-size:12px;color:var(--muted)">Sent</div></div>
+            <div class="stat"><div class="num" id="statBot">—</div><div style="font-size:12px;color:var(--muted)">Bot</div></div>
           </div>
         </div>
 
         <div class="card">
           <h3>Quick actions</h3>
           <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn" onclick="openPage('upload')">Importer depuis Pinterest</button>
-            <button class="btn ghost" onclick="openPage('gallery')">Voir la galerie</button>
-            <button class="btn ghost" onclick="refreshAll()">Rafraîchir données</button>
+            <button class="btn" onclick="openPage('dashboard'); focusInput('pinUrl')">Importer depuis Pinterest</button>
+            <button class="btn ghost" onclick="openPage('dashboard'); focusInput('googleUrl')">Importer depuis Google</button>
+            <button class="btn ghost" onclick="refreshAll()">Rafraîchir</button>
           </div>
         </div>
       </aside>
 
-      <!-- CONTENT -->
-      <section style="min-height:400px">
+      <!-- right: content -->
+      <section style="min-height:400px;">
+
         <!-- HOME -->
-        <div id="home" class="card page">
-          <h3>Accueil</h3>
-          <p style="color:var(--muted);margin-bottom:12px">Panneau complet prêt à être déployé. L'interface est connectée au backend Render.</p>
+        <div id="home" class="card page fade-in">
+          <h3>accueil</h3>
+          <p style="color:var(--muted);margin-top:8px">Bienvenue — connecte ton compte Discord pour autoriser le panel. Après connexion tu pourras importer des images depuis Pinterest ou Google, choisir une catégorie et définir un nombre d'images (1–1000).</p>
+          <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn" onclick="startDiscordOAuth()">connexion discord</button>
+            <button class="btn ghost" onclick="openPage('explain')">explication</button>
+            <button class="btn" onclick="openPage('dashboard')">aller au dashboard</button>
+          </div>
 
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <div style="flex:1;min-width:260px" class="card">
-              <h3>Vérifier la connexion</h3>
-              <p style="color:var(--muted);margin-bottom:12px">Etat du bot et tests rapides.</p>
-              <div style="display:flex;gap:8px">
-                <button class="btn" onclick="checkBotStatus()">Vérifier maintenant</button>
-                <button class="btn ghost" onclick="testSearchSample()">Test recherche</button>
-              </div>
-            </div>
-
-            <div style="flex:1;min-width:260px" class="card">
-              <h3>Importer rapidement</h3>
-              <div class="form-label">Lien Pinterest</div>
-              <input id="quickUrl" type="text" placeholder="https://www.pinterest.com/board/..." />
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <select id="quickCategory" style="flex:1">
-                  <option value="boy">Boy</option>
-                  <option value="girl">Girl</option>
-                  <option value="banner">Banner</option>
-                  <option value="match">Match</option>
-                </select>
-                <button class="btn" onclick="quickImport()">Importer</button>
-              </div>
-              <div style="margin-top:10px;color:var(--muted);font-size:13px">Max 1000 images par import. Le backend gère le scraping.</div>
+          <div style="margin-top:16px" id="homeCategories">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <div class="chip" onclick="setFilter('all')">toutes</div>
+              <div class="chip" onclick="setFilter('boy')">boy</div>
+              <div class="chip" onclick="setFilter('girl')">girl</div>
+              <div class="chip" onclick="setFilter('anime')">animé</div>
+              <div class="chip" onclick="setFilter('pdp')">pdp</div>
+              <div class="chip" onclick="setFilter('match')">match</div>
             </div>
           </div>
         </div>
 
-        <!-- UPLOAD -->
-        <div id="upload" class="card page" style="display:none">
-          <h3>Import depuis Pinterest</h3>
-          <div style="display:flex;gap:14px;flex-wrap:wrap">
-            <div style="flex:1;min-width:320px">
-              <div class="form-label">URL Pinterest</div>
-              <input id="pinterestUrl" type="text" placeholder="Board / User / Search URL" />
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <div style="flex:1">
-                  <div class="form-label">Nombre d'images</div>
-                  <input id="imageCount" type="number" min="1" max="1000" value="50" />
-                </div>
-                <div style="width:180px">
-                  <div class="form-label">Catégorie</div>
-                  <select id="pCategory">
-                    <option value="boy">boy</option>
-                    <option value="girl">girl</option>
-                    <option value="banner">banner</option>
-                    <option value="match">match</option>
-                  </select>
-                </div>
-              </div>
+        <!-- EXPLAIN -->
+        <div id="explain" class="card page" style="display:none">
+          <h3>explication</h3>
+          <div style="color:var(--muted);margin-top:10px;line-height:1.6">
+            <p><strong>Connexion Discord :</strong> clique sur « connexion discord ». Le flux OAuth2 (identify + guilds.join) récupèrera les informations de l'utilisateur et, si autorisé, permettra d'ajouter automatiquement l'utilisateur aux serveurs où le bot est présent.</p>
 
-              <div style="margin-top:12px">
-                <button class="btn" id="startImportBtn" onclick="uploadFromPinterest()">Démarrer l'import</button>
-                <button class="btn ghost" onclick="simulateImport()">Simuler import (dev)</button>
-              </div>
+            <p><strong>Importer depuis Pinterest :</strong> copiez l'URL d'un board / search / pin et collez-la dans le dashboard → sélectionnez la catégorie → choisissez le nombre (1-1000) → cliquez sur importer. Le backend scrappe la page et stocke les URLs en base.</p>
 
-              <div style="margin-top:12px">
-                <div class="form-label">Progression</div>
-                <div class="progress" style="margin-top:8px"><div class="bar" id="importProgress"></div></div>
-                <div id="importMsg" style="margin-top:8px;color:var(--muted)">Aucune action en cours.</div>
-              </div>
-            </div>
+            <p><strong>Importer depuis Google :</strong> vous pouvez coller une URL de résultats Google Images (ou une query). Le scraping Google est fragile — pour un usage en production il est recommandé d'utiliser une API (SerpAPI ou Google CSE).</p>
 
-            <div style="flex:1;min-width:300px">
-              <h4 style="margin-bottom:8px">Conseils</h4>
-              <ul style="color:var(--muted);font-size:14px;line-height:1.6">
-                <li>Utilise une URL de board, user ou recherche Pinterest.</li>
-                <li>Si tu rencontres des erreurs CORS côté backend, assure-toi que Flask a CORS(app).</li>
-                <li>Le backend gère le scraping et renvoie les images.</li>
-              </ul>
-            </div>
+            <p><strong>Dashboard et bot :</strong> une fois connecté, le bot renverra les images via la commande Discord (par ex. <code>!pdp girl</code>). Le panneau affiche les logs, le statut et les totaux.</p>
           </div>
         </div>
 
-        <!-- GALLERY -->
-        <div id="gallery" class="card page" style="display:none">
-          <h3>Galerie</h3>
-          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-            <div style="flex:1;min-width:200px">
-              <input id="searchImg" type="text" placeholder="Recherche par nom / id / source" oninput="debounce(filterGallery, 300)" />
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="card page" style="display:none">
+          <h3>dashboard</h3>
+
+          <!-- Pinterest block -->
+          <div style="margin-top:8px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:600;color:var(--accent)">Pinterest</div>
+              <div style="font-size:13px;color:var(--muted)">max 1000 images / import</div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <div class="filters" id="galleryFilters">
-                <div class="chip active" data-cat="all" onclick="toggleFilter(event)">Toutes</div>
-                <div class="chip" data-cat="boy" onclick="toggleFilter(event)">boy</div>
-                <div class="chip" data-cat="girl" onclick="toggleFilter(event)">girl</div>
-                <div class="chip" data-cat="banner" onclick="toggleFilter(event)">banner</div>
-                <div class="chip" data-cat="match" onclick="toggleFilter(event)">match</div>
+
+            <div class="dash-row" style="margin-top:12px">
+              <input id="pinUrl" type="text" placeholder="collez ici l'url pinterest" />
+              <select id="pinCat">
+                <option value="boy">boy</option>
+                <option value="girl">girl</option>
+                <option value="anime">animé</option>
+                <option value="pdp">pdp</option>
+                <option value="match">match</option>
+              </select>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="flex:1" class="range-wrap">
+                <input id="pinRange" type="range" min="1" max="1000" value="50" />
               </div>
+              <div class="range-value" id="pinCount">50</div>
             </div>
-            <div style="margin-left:auto">
-              <button class="btn ghost" onclick="loadImages(true)">Rafraîchir</button>
+
+            <div style="display:flex;gap:12px">
+              <button class="btn" id="pinUploadBtn" onclick="doScrape('pinterest')">importer depuis pinterest</button>
+              <button class="btn ghost" onclick="simulateProgress('pin')">simuler</button>
             </div>
+            <div style="margin-top:10px" class="progress" aria-hidden="true"><div class="bar" id="pinProgress"></div></div>
           </div>
 
-          <div id="galleryGrid" class="grid-images" style="margin-top:12px"></div>
-
-          <div style="display:flex;gap:8px;justify-content:center;margin-top:12px" id="pagination"></div>
-        </div>
-
-        <!-- CONFIG -->
-        <div id="config" class="card page" style="display:none">
-          <h3>Configuration</h3>
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <div style="flex:1;min-width:260px">
-              <h4>Rotation automatique</h4>
-              <div style="display:flex;gap:8px;align-items:center">
-                <label style="font-size:13px;color:var(--muted);margin-right:8px">Activer</label>
-                <label class="chip" id="rotSwitch" onclick="toggleRotation()">Non</label>
-              </div>
-              <div style="margin-top:10px">
-                <div class="form-label">Intervalle (minutes)</div>
-                <input id="rotationInterval" type="number" min="1" max="1440" value="30" />
-              </div>
-              <div style="margin-top:12px"><button class="btn" onclick="saveRotationSettings()">Sauvegarder rotation</button></div>
+          <!-- Google block -->
+          <div style="margin-top:16px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:600;color:var(--accent)">Google Images</div>
+              <div style="font-size:13px;color:var(--muted)">max 1000 images / import</div>
             </div>
 
-            <div style="flex:1;min-width:260px">
-              <h4>Catégories actives</h4>
-              <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-                <label><input type="checkbox" id="catBoy" checked /> boy</label>
-                <label><input type="checkbox" id="catGirl" checked /> girl</label>
-                <label><input type="checkbox" id="catBanner" /> banner</label>
-                <label><input type="checkbox" id="catMatch" /> match</label>
-              </div>
-              <div style="margin-top:12px"><button class="btn" onclick="saveCategorySettings()">Sauvegarder catégories</button></div>
+            <div class="dash-row" style="margin-top:12px">
+              <input id="googleUrl" type="text" placeholder="collez ici l'url google images ou une query" />
+              <select id="googleCat">
+                <option value="boy">boy</option>
+                <option value="girl">girl</option>
+                <option value="anime">animé</option>
+                <option value="pdp">pdp</option>
+                <option value="match">match</option>
+              </select>
             </div>
 
-            <div style="flex:1;min-width:260px">
-              <h4>Token Discord</h4>
-              <div class="form-label">Stockage local sécurisé (recommandé: backend)</div>
-              <input id="discordToken" type="password" placeholder="Entrer token (ne partage jamais)" />
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <button class="btn" onclick="saveTokenLocal()">Sauvegarder local</button>
-                <button class="btn ghost" onclick="pushTokenToBackend()">Envoyer au backend</button>
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="flex:1" class="range-wrap">
+                <input id="googleRange" type="range" min="1" max="1000" value="50" />
               </div>
+              <div class="range-value" id="googleCount">50</div>
             </div>
+
+            <div style="display:flex;gap:12px">
+              <button class="btn" id="googleUploadBtn" onclick="doScrape('google')">importer depuis google</button>
+              <button class="btn ghost" onclick="simulateProgress('google')">simuler</button>
+            </div>
+            <div style="margin-top:10px" class="progress"><div class="bar" id="googleProgress"></div></div>
           </div>
+
         </div>
 
         <!-- LOGS -->
         <div id="logs" class="card page" style="display:none">
-          <h3>Logs</h3>
-          <div id="logsContainer" style="margin-top:8px">
-            <div style="color:var(--muted)">Chargement des logs...</div>
+          <h3>logs</h3>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <button class="btn" onclick="loadLogs(true)">rafraîchir</button>
+            <div style="color:var(--muted);font-size:13px;margin-left:10px">les logs sont mis à jour automatiquement toutes les 6s</div>
           </div>
-        </div>
-
-        <!-- DOCS -->
-        <div id="docs" class="card page" style="display:none">
-          <h3>Documentation</h3>
-          <div style="color:var(--muted);line-height:1.6;margin-top:8px;font-size:14px">
-            <p><strong>Démarrage rapide</strong></p>
-            <ol>
-              <li>Configurer token dans Configuration (ou via backend sécurisé).</li>
-              <li>Importer images via Pinterest (Upload).</li>
-              <li>Vérifier la rotation automatique et catégories actives.</li>
-              <li>Consulter les logs et la galerie.</li>
-            </ol>
-            <p><strong>Déploiement</strong> : déposer ce fichier index.html sur Netlify / Vercel / GitHub Pages. Assure-toi que le backend Render est en ligne et CORS activé.</p>
-          </div>
+          <div style="margin-top:12px" id="logConsole" class="log-console" aria-live="polite">Chargement des logs...</div>
         </div>
 
       </section>
-
     </main>
 
-    <footer class="foot">PDP Panel • Connected to Render • Voir la documentation backend pour endpoints</footer>
+    <footer style="text-align:center;color:var(--muted);font-size:13px;padding:8px">pdp panel V1 • connecté au backend</footer>
   </div>
 
 <script>
-/* =========================
-   Configuration → change API_URL only here
-   ========================= */
-const API_URL = 'https://pfpbot-8e9l.onrender.com';
-
-/* Utilities */
-function qs(sel, ctx=document){return ctx.querySelector(sel)}
-function qsa(sel, ctx=document){return Array.from(ctx.querySelectorAll(sel))}
-function el(tag, attrs={}, txt=''){const e=document.createElement(tag);Object.assign(e,attrs);if(txt)e.textContent=txt;return e}
-function safeJSON(res){ return res.json ? res.json() : Promise.resolve({}) }
-
-/* State */
-let currentPage = 'home';
-let images = []; // cached
-let galleryFilter = {category:'all', q:'', page:1, limit:24};
-let rotationState = {enabled:false, interval:30};
-let lastAction = null;
-
-/* Navigation */
-function navigate(e){
-  const item = e.currentTarget || e.target;
-  const target = item.dataset.page;
-  openPage(target);
-  qsa('.menu-item').forEach(m=>m.classList.remove('active'));
-  item.classList.add('active');
-}
-function openPage(page){
-  currentPage = page;
-  qsa('.page').forEach(p => p.style.display = (p.id===page ? 'block' : 'none'));
-  // scroll to top of content area
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(page==='gallery') loadImages();
-  if(page==='logs') loadLogs();
-}
-
-/* INITIALIZE */
-(async function init(){
-  checkBotStatus();
-  await loadStats();
-  loadLocalConfig();
-  // show home by default
-  openPage('home');
+/*
+  Single-page panel script
+  - Change API_URL to point to your backend (example: https://pfpbot-8e9l.onrender.com)
+  - OAuth link expects backend path /oauth/authorize (replace if different)
+*/
+const API_URL = (function(){
+  // default fallback to same host
+  const host = window.location.origin;
+  return host; // replace here if your API is elsewhere: e.g. 'https://my-backend.example'
 })();
 
-/* 1) STATUS & STATS */
-async function checkBotStatus(){
-  const dot = qs('#statusDot');
-  const text = qs('#statusText');
-  try{
-    const resp = await fetch(`${API_URL}/health`, {cache:'no-store'});
-    const data = await resp.json();
-    const online = data.status === 'online';
-    dot.style.background = online ? getComputedStyle(document.documentElement).getPropertyValue('--success').trim() || '#10b981' : getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ef4444';
-    text.textContent = online ? 'Bot : en ligne' : 'Bot : hors ligne';
-    qs('#statOnline').textContent = online ? 'OK' : 'HORS';
-  }catch(err){
-    dot.style.background = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ef4444';
-    text.textContent = 'Erreur connexion API';
-    qs('#statOnline').textContent = 'ERR';
-  }
+/* --- Utilities --- */
+const qs = (s, ctx=document) => ctx.querySelector(s);
+const qsa = (s, ctx=document) => Array.from(ctx.querySelectorAll(s));
+function el(tag, attrs={}, txt=''){ const e=document.createElement(tag); Object.assign(e, attrs); if(txt) e.textContent = txt; return e; }
+
+/* --- Navigation --- */
+function navigate(e){
+  const t = e.currentTarget || e.target;
+  const target = t.dataset.target;
+  openPage(target);
+  qsa('.nav-btn').forEach(b => b.classList.toggle('active', b===t));
+}
+function openPage(name){
+  qsa('.page').forEach(p => p.style.display = (p.id===name ? 'block' : 'none'));
+  // sidebar highlight
+  qsa('.menu-item').forEach(m => m.classList.toggle('active', m.dataset.page===name));
+  // scroll top
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function startDiscordOAuth(){
+  // Redirect user to backend authorize endpoint (backend should redirect to Discord)
+  window.location.href = API_URL + '/oauth/authorize';
+}
+function focusInput(id){
+  setTimeout(()=>{ const el=qs('#'+id); if(el) el.focus(); }, 200);
 }
 
+/* --- Status polling --- */
+async function updateBotStatus(){
+  try{
+    const resp = await fetch(API_URL + '/health', {cache:'no-store'});
+    if(!resp.ok) throw new Error('no');
+    const data = await resp.json();
+    const ok = data.status === 'ok' || data.bot_ready === true || data.status === 'online';
+    qs('#statusText').textContent = ok ? 'bot : connecté' : 'bot : hors-ligne';
+    qs('#statusDot').style.background = ok ? getComputedStyle(document.documentElement).getPropertyValue('--success').trim() || '#10b981' : getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ef4444';
+    qs('#statBot').textContent = ok ? 'OK' : 'HORS';
+    // update small stats
+    if(data.pending !== undefined) qs('#statPending').textContent = data.pending;
+  }catch(err){
+    qs('#statusText').textContent = 'bot : erreur';
+    qs('#statusDot').style.background = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#ef4444';
+    qs('#statBot').textContent = 'ERR';
+  }
+}
+setInterval(updateBotStatus, 5000);
+updateBotStatus();
+
+/* --- Stats loader --- */
 async function loadStats(){
   try{
-    const res = await fetch(`${API_URL}/stats`);
-    const data = await res.json();
-    qs('#statTotal').textContent = data.total || 0;
-    qs('#statRotations').textContent = data.rotations || 0;
-    qs('#statLast').textContent = data.last_action || '—';
-  }catch(err){
-    console.warn('stats error',err);
-  }
-}
-
-/* 2) UPLOAD / SCRAPE (Pinterest) */
-async function uploadFromPinterest(){
-  const url = qs('#pinterestUrl').value.trim();
-  const count = parseInt(qs('#imageCount').value,10)||50;
-  const category = qs('#pCategory').value;
-
-  if(!url) { alert('Entrez une URL Pinterest'); return }
-  qs('#startImportBtn').disabled = true;
-  setImportProgress(0,'Démarrage...');
-  try{
-    const resp = await fetch(`${API_URL}/scrape`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({url, count, category})
-    });
-    if(!resp.ok){
-      const text = await resp.text();
-      throw new Error(`Erreur serveur: ${resp.status} ${text}`);
+    const r = await fetch(API_URL + '/stats', {cache:'no-store'});
+    if(!r.ok) return;
+    const js = await r.json();
+    qs('#statTotal').textContent = js.total ?? '—';
+    if(js.by_category){
+      // not exhaustive
     }
-    // assume backend returns {count, images: [...]}
-    const data = await resp.json();
-    // animate progress
-    await animateProgressTo(80);
-    // trigger refresh
-    await loadImages(true);
-    await animateProgressTo(100);
-    setTimeout(()=>setImportProgress(0,'Import terminé'),500);
-    alert(`Import terminé : ${data.count || count} images ajoutées`);
-    await loadStats();
-  }catch(err){
-    console.error(err);
-    setImportProgress(0,'Erreur lors de l\'import');
-    alert('Erreur lors de l import: ' + (err.message||err));
-  }finally{
-    qs('#startImportBtn').disabled = false;
+  }catch(e){}
+}
+loadStats();
+
+/* --- Range UI --- */
+function wireRanges(){
+  const pinRange = qs('#pinRange'), pinCount = qs('#pinCount');
+  const gRange = qs('#googleRange'), gCount = qs('#googleCount');
+  if(pinRange && pinCount){
+    pinCount.textContent = pinRange.value;
+    pinRange.oninput = e => pinCount.textContent = e.target.value;
+  }
+  if(gRange && gCount){
+    gCount.textContent = gRange.value;
+    gRange.oninput = e => gCount.textContent = e.target.value;
+  }
+}
+wireRanges();
+
+/* --- Scrape actions --- */
+async function doScrape(source){
+  try{
+    if(source==='pinterest'){
+      const url = qs('#pinUrl').value.trim();
+      const category = qs('#pinCat').value;
+      const limit = parseInt(qs('#pinRange').value,10) || 50;
+      if(!url){ alert('Entrez une URL Pinterest'); return; }
+      await startImport({url, category, limit, source: 'pinterest'}, 'pin');
+    } else {
+      const url = qs('#googleUrl').value.trim();
+      const category = qs('#googleCat').value;
+      const limit = parseInt(qs('#googleRange').value,10) || 50;
+      if(!url){ alert('Entrez une URL Google'); return; }
+      await startImport({url, category, limit, source: 'google'}, 'google');
+    }
+  }catch(e){
+    console.error(e); addLog('Erreur lancement import: ' + e.message, 'error');
   }
 }
 
-/* Dev helper: simulate import progress locally */
-function simulateImport(){
-  setImportProgress(0,'Simulation...');
-  let p=0;
-  const id=setInterval(()=>{
-    p+=7;
-    setImportProgress(p,'Téléchargement...');
-    if(p>=100){ clearInterval(id); setImportProgress(0,'Simulation terminée'); }
-  },180);
+async function startImport(payload, key){
+  // UI: progress animate
+  const progressEl = qs('#' + (key==='pin' ? 'pinProgress' : 'googleProgress'));
+  const btn = qs('#' + (key==='pin' ? 'pinUploadBtn' : 'googleUploadBtn'));
+  btn.disabled = true;
+  setProgress(progressEl, 6, 'start');
+  addLog(`Lancement import ${payload.source} (${payload.limit}) pour ${payload.category}`);
+  try{
+    const resp = await fetch(API_URL + '/scrape', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const js = await resp.json();
+    if(!resp.ok){
+      addLog(`Erreur backend: ${js.error || JSON.stringify(js)}`, 'error');
+      alert('Erreur serveur: ' + (js.error || resp.status));
+    } else {
+      // animate to 90%
+      await animateProgress(progressEl, 90, 800);
+      setProgress(progressEl, 100, 'done');
+      addLog(`Import terminé: inserted=${js.inserted ?? js.count ?? 'n/a'} found=${js.found ?? 'n/a'}`);
+      // refresh stats and logs
+      await loadStats();
+      await loadLogs();
+      alert('Import terminé');
+    }
+  }catch(err){
+    addLog('Erreur import: ' + err.message, 'error');
+    alert('Erreur réseau lors de l import: ' + err.message);
+  }finally{
+    btn.disabled = false;
+    setTimeout(()=>setProgress(progressEl, 0), 700);
+  }
 }
 
-/* Progress helpers */
-function setImportProgress(percent, msg=''){
-  percent = Math.min(100, Math.max(0, percent));
-  qs('#importProgress').style.width = percent + '%';
-  qs('#importMsg').textContent = msg || '';
+/* progress helpers */
+function setProgress(el, val){
+  if(!el) return;
+  el.style.width = (Math.max(0, Math.min(100, val))) + '%';
 }
-function animateProgressTo(target=100, ms=700){
-  return new Promise(resolve=>{
-    const elBar = qs('#importProgress');
-    const start = parseFloat(elBar.style.width)||0;
+function animateProgress(el, target=100, ms=600){
+  return new Promise(res=>{
+    const start = parseFloat(el.style.width)||0;
     const delta = target - start;
-    const startT = Date.now();
-    const tick = ()=>{
-      const t = Math.min(1,(Date.now()-startT)/ms);
-      const cur = Math.round(start + delta*t);
-      elBar.style.width = cur + '%';
-      if(t<1) requestAnimationFrame(tick); else resolve();
-    };
+    const t0 = Date.now();
+    function tick(){
+      const t = Math.min(1,(Date.now()-t0)/ms);
+      el.style.width = Math.round(start + delta*t) + '%';
+      if(t<1) requestAnimationFrame(tick); else res();
+    }
     tick();
   });
 }
-
-/* QUICK IMPORT (home) */
-async function quickImport(){
-  const url = qs('#quickUrl').value.trim();
-  const cat = qs('#quickCategory').value;
-  if(!url) return alert('Entrez une URL');
-  qs('#pinterestUrl').value = url;
-  qs('#pCategory').value = cat;
-  openPage('upload');
-  await new Promise(r=>setTimeout(r,250));
-  uploadFromPinterest();
+function simulateProgress(key){
+  const el = qs('#' + (key==='pin' ? 'pinProgress' : 'googleProgress'));
+  let p=0; setProgress(el,0);
+  const id=setInterval(()=>{ p+=8; setProgress(el,p); if(p>=100){ clearInterval(id); setTimeout(()=>setProgress(el,0),400); } },120);
 }
 
-/* 3) GALLERY - load images (pagination & filters) */
-async function loadImages(force=false){
-  // use cached if not force
-  if(images.length&& !force && currentPage!=='gallery') return renderGallery();
+/* --- Logs --- */
+async function loadLogs(force=false){
   try{
-    const {category,page,limit,q} = galleryFilter;
-    const params = new URLSearchParams();
-    if(category && category!=='all') params.set('category',category);
-    params.set('page',page||1);
-    params.set('limit',limit||24);
-    if(q) params.set('q',q);
-    const resp = await fetch(`${API_URL}/images?${params.toString()}`, {cache:'no-store'});
-    if(!resp.ok) throw new Error('Erreur récupération images');
-    const data = await resp.json();
-    images = data.images || data.results || [];
-    renderGallery(data.total || images.length);
-  }catch(err){
-    console.error('load images',err);
-    qs('#galleryGrid').innerHTML = '<div style="color:var(--muted)">Impossible de charger les images</div>';
-  }
-}
-
-function renderGallery(totalCount){
-  const grid = qs('#galleryGrid');
-  grid.innerHTML = '';
-  if(!images.length){
-    grid.innerHTML = '<div style="color:var(--muted)">Aucune image</div>';
-    qs('#pagination').innerHTML = '';
-    return;
-  }
-  images.forEach(img=>{
-    const card = el('div',{className:'img-card'});
-    const imgEl = el('img',{src:img.url, alt:img.name||img.id});
-    const meta = el('div',{className:'img-meta'});
-    const left = el('div',{className:'meta-left'}, img.name || ('id:'+ (img.id||'n/a')) );
-    const right = el('div',{className:'meta-right'});
-    const delBtn = el('button',{className:'btn ghost', onclick:()=>deleteImage(img.id)}, 'Supprimer');
-    const setBtn = el('button',{className:'btn', onclick:()=>setAsProfile(img.id)}, 'Définir PDP');
-    right.appendChild(setBtn); right.appendChild(delBtn);
-    meta.appendChild(left); meta.appendChild(right);
-    card.appendChild(imgEl); card.appendChild(meta);
-    grid.appendChild(card);
-  });
-  // pagination (simple)
-  const pagination = qs('#pagination');
-  pagination.innerHTML = '';
-  const prev = el('button',{className:'btn ghost', onclick:()=>changePage(-1)}, 'Précédent');
-  const next = el('button',{className:'btn ghost', onclick:()=>changePage(1)}, 'Suivant');
-  pagination.appendChild(prev);
-  pagination.appendChild(next);
-}
-
-function changePage(delta){
-  galleryFilter.page = Math.max(1,(galleryFilter.page||1) + delta);
-  loadImages(true);
-}
-
-/* gallery filters */
-function toggleFilter(e){
-  const chip = e.currentTarget || e.target;
-  const cat = chip.dataset.cat;
-  qsa('#galleryFilters .chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  galleryFilter.category = cat;
-  galleryFilter.page = 1;
-  loadImages(true);
-}
-function filterGallery(){
-  galleryFilter.q = qs('#searchImg').value.trim();
-  galleryFilter.page = 1;
-  loadImages(true);
-}
-
-/* debounce */
-let _deb;
-function debounce(fn,ms=300){
-  clearTimeout(_deb);
-  _deb = setTimeout(fn,ms);
-}
-
-/* 4) delete image */
-async function deleteImage(id){
-  if(!confirm('Supprimer cette image ?')) return;
-  try{
-    const resp = await fetch(`${API_URL}/images/${encodeURIComponent(id)}`, {method:'DELETE'});
-    if(!resp.ok) throw new Error('Erreur suppression');
-    // refresh
-    await loadImages(true);
-    await loadStats();
-  }catch(err){
-    alert('Erreur suppression: '+err.message);
-  }
-}
-
-/* 5) Set as profile (call backend) */
-async function setAsProfile(id){
-  try{
-    const resp = await fetch(`${API_URL}/images/${encodeURIComponent(id)}/set`, {method:'POST'});
-    if(!resp.ok) throw new Error('Erreur changement PDP');
-    alert('PDP mise à jour');
-    await loadStats();
-  }catch(err){
-    alert('Erreur: '+err.message);
-  }
-}
-
-/* 6) Logs */
-async function loadLogs(){
-  try{
-    const resp = await fetch(`${API_URL}/logs`);
-    const data = await resp.json();
-    const container = qs('#logsContainer');
-    container.innerHTML = '';
-    (data.logs || data || []).slice(0,200).forEach(l=>{
-      const e = el('div',{className:'card'});
-      const t = el('div',{style:'font-size:12px;color:var(--muted);margin-bottom:6px'}, l.time || l.timestamp || '');
-      const m = el('div',{}, l.msg || l.message || JSON.stringify(l));
-      e.appendChild(t); e.appendChild(m);
-      container.appendChild(e);
+    const r = await fetch(API_URL + '/logs?limit=200', {cache:'no-store'});
+    if(!r.ok) throw new Error('logs fail');
+    const js = await r.json();
+    const lines = (js.logs || js).map(l => {
+      const t = l.created_at ? (new Date(l.created_at).toLocaleString()) : '';
+      const lvl = l.level ? '['+l.level+']' : '';
+      const msg = (typeof l.message === 'string') ? l.message : JSON.stringify(l.message);
+      return `${t} ${lvl} ${msg}`;
     });
-  }catch(err){
-    qs('#logsContainer').innerHTML = '<div style="color:var(--muted)">Impossible de charger les logs</div>';
-  }
-}
-
-/* 7) CONFIG: rotation & categories & token */
-function loadLocalConfig(){
-  try{
-    const cfg = JSON.parse(localStorage.getItem('pdp_config')||'{}');
-    rotationState.enabled = cfg.rotationEnabled||false;
-    rotationState.interval = cfg.rotationInterval||30;
-    qs('#rotSwitch').textContent = rotationState.enabled ? 'Oui' : 'Non';
-    qs('#rotationInterval').value = rotationState.interval;
-    // categories
-    qs('#catBoy').checked = cfg.catBoy!==false;
-    qs('#catGirl').checked = cfg.catGirl!==false;
-    qs('#catBanner').checked = cfg.catBanner||false;
-    qs('#catMatch').checked = cfg.catMatch||false;
-    // token
-    const token = localStorage.getItem('pdp_token');
-    if(token) qs('#discordToken').value = token;
-  }catch(e){ console.warn('loadLocalConfig',e) }
-}
-
-function toggleRotation(){
-  rotationState.enabled = !rotationState.enabled;
-  qs('#rotSwitch').textContent = rotationState.enabled ? 'Oui' : 'Non';
-}
-
-async function saveRotationSettings(){
-  rotationState.interval = parseInt(qs('#rotationInterval').value,10) || 30;
-  const cfg = JSON.parse(localStorage.getItem('pdp_config')||'{}');
-  cfg.rotationEnabled = rotationState.enabled;
-  cfg.rotationInterval = rotationState.interval;
-  localStorage.setItem('pdp_config', JSON.stringify(cfg));
-  alert('Paramètres de rotation sauvegardés localement.');
-  // optionally push to backend
-  try{
-    await fetch(`${API_URL}/config/rotation`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({enabled: rotationState.enabled, interval: rotationState.interval})
-    });
-  }catch(e){}
-}
-
-function saveCategorySettings(){
-  const cfg = JSON.parse(localStorage.getItem('pdp_config')||'{}');
-  cfg.catBoy = !!qs('#catBoy').checked;
-  cfg.catGirl = !!qs('#catGirl').checked;
-  cfg.catBanner = !!qs('#catBanner').checked;
-  cfg.catMatch = !!qs('#catMatch').checked;
-  localStorage.setItem('pdp_config', JSON.stringify(cfg));
-  alert('Catégories sauvegardées localement.');
-}
-
-function saveTokenLocal(){
-  const t = qs('#discordToken').value.trim();
-  if(!t) return alert('Token vide');
-  localStorage.setItem('pdp_token', t);
-  alert('Token sauvegardé localement. Pour plus de sécurité, stocke côté serveur.');
-}
-
-/* push token to backend (if available) */
-async function pushTokenToBackend(){
-  const t = qs('#discordToken').value.trim();
-  if(!t) return alert('Token vide');
-  if(!confirm('Envoyer le token au backend et le stocker ? Assure-toi que le backend est sécurisé.')) return;
-  try{
-    const resp = await fetch(`${API_URL}/config/token`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({token:t})
-    });
-    if(!resp.ok) throw new Error('Erreur serveur');
-    alert('Token envoyé au backend.');
-  }catch(err){
-    alert('Erreur envoi token: '+err.message);
-  }
-}
-
-/* 8) small helpers / tests */
-async function refreshAll(){
-  await checkBotStatus();
-  await loadStats();
-  if(currentPage==='gallery') loadImages(true);
-}
-
-async function testSearchSample(){
-  const sample = 'chat';
-  try{
-    const resp = await fetch(`${API_URL}/search?query=${encodeURIComponent(sample)}&source=all`);
-    const data = await resp.json();
-    if(!data.results || !data.results.length) return alert('Aucun résultat de test');
-    images = data.results.slice(0,24);
-    openPage('gallery');
-    renderGallery();
-    alert('Test recherche OK, résultats affichés.');
-  }catch(err){
-    alert('Erreur test recherche: '+(err.message||err));
-  }
-}
-
-/* optional: set image as PDP - fallback if endpoint not present */
-async function setAsProfileFallback(url){
-  // Will attempt to call backend endpoint /set-profile
-  try{
-    await fetch(`${API_URL}/set-profile`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({url})
-    });
-    alert('Requête PDP envoyée au backend.');
+    const box = qs('#logConsole');
+    box.innerHTML = lines.map(s => escapeHtml(s)).join('\n\n');
+    box.scrollTop = box.scrollHeight;
   }catch(e){
-    alert('Erreur: ' + e.message);
+    const box = qs('#logConsole');
+    box.innerHTML = 'Impossible de charger les logs';
   }
 }
+function addLog(msg, level='info'){
+  // append locally to console and optionally POST to backend
+  const box = qs('#logConsole');
+  const now = new Date().toLocaleString();
+  const line = `${now} [${level}] ${msg}`;
+  box.innerHTML += (box.innerHTML ? '\n\n' : '') + escapeHtml(line);
+  box.scrollTop = box.scrollHeight;
+  // try to POST small event to backend (non-blocking)
+  fetch(API_URL + '/events', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({level, message: msg})}).catch(()=>{});
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* debounce for search */
-let dd;
-function onSearchInput(){
-  clearTimeout(dd);
-  dd = setTimeout(()=> {
-    galleryFilter.q = qs('#searchImg').value.trim();
-    loadImages(true);
-  }, 400);
+/* auto-refresh logs */
+setInterval(loadLogs, 6000);
+loadLogs();
+
+/* --- Images filter quick helper --- */
+function setFilter(cat){
+  qsa('.chip').forEach(c => c.classList.toggle('active', c.textContent.trim().toLowerCase()===cat || (cat==='all' && c.textContent.trim().toLowerCase()==='toutes')));
+  // open gallery or dashboard - for now just go to dashboard
+  openPage('dashboard');
 }
 
-/* handle window focus refresh */
-window.addEventListener('focus', ()=>{ checkBotStatus(); loadStats(); });
-
-/* Helper for deleting image by index when gallery local data used */
-function deleteImageByIndex(index){
-  if(!confirm('Supprimer ?')) return;
-  images.splice(index,1);
-  renderGallery();
+/* --- Utility: refresh all --- */
+async function refreshAll(){
+  await updateBotStatus();
+  await loadStats();
+  await loadLogs();
 }
 
-/* small utility to open page from buttons */
-function openPageFromBtn(name){ openPage(name) }
-
-/* Expose some functions to console for debugging */
-window.PDPPanel = { API_URL, refreshAll, loadImages, loadStats, checkBotStatus, uploadFromPinterest };
+/* --- On load --- */
+(function init(){
+  // initial page
+  openPage('home');
+  // wire keyboard: navigate with 1-4
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='1') openPage('home');
+    if(e.key==='2') openPage('explain');
+    if(e.key==='3') openPage('dashboard');
+    if(e.key==='4') openPage('logs');
+  });
+})();
 
 </script>
 </body>
