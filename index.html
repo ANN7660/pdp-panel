@@ -363,7 +363,6 @@
           </h2>
           
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem">
-            <!-- Import Card -->
             <div class="category-card" onclick="switchView('import')">
               <div class="category-icon">📥</div>
               <h3>Importer</h3>
@@ -371,7 +370,6 @@
               <div class="category-badge">Scraping</div>
             </div>
 
-            <!-- Dashboard Card -->
             <div class="category-card" onclick="switchView('dashboard')">
               <div class="category-icon">📊</div>
               <h3>Dashboard</h3>
@@ -379,7 +377,6 @@
               <div class="category-badge">Statistiques</div>
             </div>
 
-            <!-- Logs Card -->
             <div class="category-card" onclick="switchView('logs')">
               <div class="category-icon">📝</div>
               <h3>Logs</h3>
@@ -387,7 +384,6 @@
               <div class="category-badge">Console</div>
             </div>
 
-            <!-- Explanation Card -->
             <div class="category-card" onclick="switchView('explanation')">
               <div class="category-icon">📖</div>
               <h3>Explication</h3>
@@ -406,7 +402,6 @@
           </h2>
           
           <div style="display:flex;flex-direction:column;gap:2rem;margin-top:2rem">
-            <!-- Step 1 -->
             <div class="explanation-step">
               <div class="step-number">1</div>
               <div class="step-content">
@@ -420,7 +415,6 @@
               </div>
             </div>
 
-            <!-- Step 2 -->
             <div class="explanation-step">
               <div class="step-number">2</div>
               <div class="step-content">
@@ -435,7 +429,6 @@
               </div>
             </div>
 
-            <!-- Step 3 -->
             <div class="explanation-step">
               <div class="step-number">3</div>
               <div class="step-content">
@@ -449,7 +442,6 @@
               </div>
             </div>
 
-            <!-- Info Box -->
             <div style="padding:1.5rem;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(124,58,237,0.1));border-radius:12px;border:1px solid rgba(59,130,246,0.3)">
               <h3 style="margin:0 0 1rem;display:flex;align-items:center;gap:0.5rem">
                 <span>💡</span>
@@ -535,8 +527,6 @@
     }
 
     function logout() {
-      localStorage.removeItem('discord_token');
-      localStorage.removeItem('discord_user');
       location.reload();
     }
 
@@ -553,24 +543,19 @@
       const token = params.get('access_token');
 
       if (token) {
-        localStorage.setItem('discord_token', token);
         const user = await fetchDiscordUser(token);
-        localStorage.setItem('discord_user', JSON.stringify(user));
         window.location.hash = '';
-        window.location.reload();
-      }
-
-      const savedToken = localStorage.getItem('discord_token');
-      const savedUser = localStorage.getItem('discord_user');
-
-      if (savedToken && savedUser) {
-        const user = JSON.parse(savedUser);
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('userInfo').style.display = 'flex';
         document.getElementById('userName').textContent = user.username;
         document.getElementById('userAvatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
         
+        checkBotStatus();
+        setInterval(checkBotStatus, 30000);
+      } else {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
         checkBotStatus();
         setInterval(checkBotStatus, 30000);
       }
