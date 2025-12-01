@@ -1,5 +1,55 @@
-<!doctype html>
-
+<div id="userInfo" style="display:none;align-items:center;gap:1rem">
+            <img id="userAvatar" style="width:40px;height:40px;border-radius:50%;border:2px solid var(--accent)">
+            <span id="userName" style="color:#000"></span>
+            <button onclick="logout()" style="padding:0.5rem 1rem;background:rgba(124,58,237,0.2);color:var(--accent);border:1px solid var(--accent);border-radius:8px;cursor:pointer;font-weight:500">
+              Déconnexion
+            </button>
+          </div>  #loginScreen{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+  }
+  .login-card{
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(20px);
+    border-radius:24px;
+    padding:3rem;
+    border:1px solid rgba(255,255,255,0.2);
+    text-align:center;
+    max-width:400px;
+    width:100%;
+  }
+  .login-card h1{
+    font-size:2.5rem;
+    margin-bottom:0.5rem;
+    color:#000;
+  }
+  .login-card p{
+    color:#000;
+    margin-bottom:2rem;
+  }
+  .discord-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.75rem;
+    width:100%;
+    padding:1rem 2rem;
+    background:#5865F2;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-size:1.125rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.3s ease;
+  }
+  .discord-btn:hover{
+    background:#4752C4;
+    transform:translateY(-2px);
+    box-shadow:0 8px 25px rgba(88,101,242,0.4);
+  }<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8" />
@@ -369,7 +419,21 @@
 </style>
 </head>
 <body>
-  <div id="mainApp">
+  <div id="loginScreen">
+    <div class="login-card">
+      <h1>🤖</h1>
+      <h1>PDP Panel V1</h1>
+      <p>Connectez-vous avec Discord pour accéder au panel d'administration</p>
+      <button class="discord-btn" onclick="loginWithDiscord()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+        Se connecter avec Discord
+      </button>
+    </div>
+  </div>
+
+  <div id="mainApp" style="display:none">
     <div class="container">
       <header>
         <div style="display:flex;align-items:center;gap:1rem">
@@ -385,199 +449,196 @@
             <span style="color:#000;font-size:0.875rem">Bot: <span id="statusTextMini">En ligne</span></span>
           </div>
 
-```
-    </div>
-  </header>
-
-  <nav>
-    <button class="nav-btn active" data-view="home">🏠 Accueil</button>
-    <button class="nav-btn" data-view="explanation">📖 Explication</button>
-    <button class="nav-btn" data-view="import">📥 Importer</button>
-    <button class="nav-btn" data-view="dashboard">📊 Dashboard</button>
-    <button class="nav-btn" data-view="logs">📝 Logs</button>
-  </nav>
-
-  <div id="homeView" class="view active">
-    <div class="card">
-      <h2 style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem;color:#000">
-        <span>🏠</span>
-        Catégories
-      </h2>
-      
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem">
-        <div class="category-card" onclick="switchView('import')">
-          <div class="category-icon">📥</div>
-          <h3>Importer</h3>
-          <p>Scraper et importer des photos de profil Discord depuis un serveur</p>
-          <div class="category-badge">Scraping</div>
         </div>
+      </header>
 
-        <div class="category-card" onclick="switchView('dashboard')">
-          <div class="category-icon">📊</div>
-          <h3>Dashboard</h3>
-          <p>Consulter les statistiques et l'état du système en temps réel</p>
-          <div class="category-badge">Statistiques</div>
+      <nav>
+        <button class="nav-btn active" data-view="home">🏠 Accueil</button>
+        <button class="nav-btn" data-view="explanation">📖 Explication</button>
+        <button class="nav-btn" data-view="import">📥 Importer</button>
+        <button class="nav-btn" data-view="dashboard">📊 Dashboard</button>
+        <button class="nav-btn" data-view="logs">📝 Logs</button>
+      </nav>
+
+      <div id="homeView" class="view active">
+        <div class="card">
+          <h2 style="display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem;color:#000">
+            <span>🏠</span>
+            Catégories
+          </h2>
+          
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem">
+            <div class="category-card" onclick="switchView('import')">
+              <div class="category-icon">📥</div>
+              <h3>Importer</h3>
+              <p>Scraper et importer des photos de profil Discord depuis un serveur</p>
+              <div class="category-badge">Scraping</div>
+            </div>
+
+            <div class="category-card" onclick="switchView('dashboard')">
+              <div class="category-icon">📊</div>
+              <h3>Dashboard</h3>
+              <p>Consulter les statistiques et l'état du système en temps réel</p>
+              <div class="category-badge">Statistiques</div>
+            </div>
+
+            <div class="category-card" onclick="switchView('logs')">
+              <div class="category-icon">📝</div>
+              <h3>Logs</h3>
+              <p>Visualiser l'historique des opérations et les messages système</p>
+              <div class="category-badge">Console</div>
+            </div>
+
+            <div class="category-card" onclick="switchView('explanation')">
+              <div class="category-icon">📖</div>
+              <h3>Explication</h3>
+              <p>Guide d'utilisation et documentation du panel</p>
+              <div class="category-badge">Aide</div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="category-card" onclick="switchView('logs')">
-          <div class="category-icon">📝</div>
-          <h3>Logs</h3>
-          <p>Visualiser l'historique des opérations et les messages système</p>
-          <div class="category-badge">Console</div>
+      <div id="explanationView" class="view">
+        <div class="card">
+          <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
+            <span>📖</span>
+            Comment ça marche ?
+          </h2>
+          
+          <div style="display:flex;flex-direction:column;gap:2rem;margin-top:2rem">
+            <div class="explanation-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h3>📥 Importer des photos</h3>
+                <p>Rendez-vous dans la section <strong>Importer</strong> pour scraper les photos de profil d'un serveur Discord.</p>
+                <ul>
+                  <li>Entrez l'ID du serveur Discord</li>
+                  <li>Cliquez sur "Démarrer l'import"</li>
+                  <li>Le bot va scraper automatiquement toutes les photos de profil des membres</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="explanation-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h3>📊 Suivre la progression</h3>
+                <p>Consultez le <strong>Dashboard</strong> pour voir les statistiques en temps réel :</p>
+                <ul>
+                  <li>Nombre total de photos scrapées</li>
+                  <li>Nombre de serveurs analysés</li>
+                  <li>Dernière activité</li>
+                  <li>Statut du bot</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="explanation-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h3>📝 Consulter les logs</h3>
+                <p>La section <strong>Logs</strong> vous permet de :</p>
+                <ul>
+                  <li>Voir l'historique de toutes les opérations</li>
+                  <li>Détecter les erreurs éventuelles</li>
+                  <li>Suivre l'activité du bot en temps réel</li>
+                </ul>
+              </div>
+            </div>
+
+            <div style="padding:1.5rem;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(124,58,237,0.1));border-radius:12px;border:1px solid rgba(59,130,246,0.3)">
+              <h3 style="margin:0 0 1rem;display:flex;align-items:center;gap:0.5rem;color:#000">
+                <span>💡</span>
+                Conseils d'utilisation
+              </h3>
+              <ul style="margin:0;padding-left:1.5rem;color:#000">
+                <li>Assurez-vous que le bot est en ligne avant de démarrer un import</li>
+                <li>Un serveur Discord peut contenir des milliers de membres, l'import peut prendre du temps</li>
+                <li>Les photos sont automatiquement sauvegardées dans la base de données</li>
+                <li>Vous pouvez consulter les logs pour voir les détails de chaque opération</li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="category-card" onclick="switchView('explanation')">
-          <div class="category-icon">📖</div>
-          <h3>Explication</h3>
-          <p>Guide d'utilisation et documentation du panel</p>
-          <div class="category-badge">Aide</div>
+      <div id="importView" class="view">
+        <div class="card">
+          <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
+            <span>📥</span>
+            Importer des Photos
+          </h2>
+          <form id="importForm" style="margin-top:2rem">
+            <div class="form-group">
+              <label>ID du Serveur Discord</label>
+              <input type="text" id="guildId" placeholder="123456789012345678" required>
+            </div>
+            <div class="form-group">
+              <label>Lien Pinterest (optionnel)</label>
+              <input type="url" id="pinterestLink" placeholder="https://pinterest.com/...">
+            </div>
+            <div class="form-group">
+              <label>Catégorie</label>
+              <select id="category" required>
+                <option value="">Sélectionner une catégorie</option>
+                <option value="boy">👦 Boy</option>
+                <option value="girl">👧 Girl</option>
+                <option value="banner">🎨 Banner</option>
+                <option value="pdp">🖼️ PDP</option>
+                <option value="match">💑 Match</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nombre de photos à uploader : <span id="photoCountValue" class="range-value">500</span></label>
+              <div class="range-container">
+                <input type="range" id="photoCount" min="1" max="1000" value="500" oninput="document.getElementById('photoCountValue').textContent = this.value">
+              </div>
+            </div>
+            <button type="submit">Démarrer l'import</button>
+          </form>
+          <div id="importProgress" style="display:none;margin-top:2rem">
+            <div style="background:rgba(124,58,237,0.2);border-radius:8px;height:8px;overflow:hidden">
+              <div id="progressBar" style="background:linear-gradient(90deg,var(--accent),#3b82f6);height:100%;width:0%;transition:width 0.3s ease"></div>
+            </div>
+            <p id="progressText" style="margin-top:1rem;color:#000;text-align:center"></p>
+          </div>
+        </div>
+      </div>
+
+      <div id="dashboardView" class="view">
+        <div class="card">
+          <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
+            <span>📊</span>
+            Dashboard
+          </h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="totalPhotos">0</div>
+              <div class="stat-label">Photos scrapées</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="totalServers">0</div>
+              <div class="stat-label">Serveurs analysés</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="lastActivity">Jamais</div>
+              <div class="stat-label">Dernière activité</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="logsView" class="view">
+        <div class="card">
+          <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
+            <span>📝</span>
+            Logs Système
+          </h2>
+          <div class="log-container" id="logContainer"></div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div id="explanationView" class="view">
-    <div class="card">
-      <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
-        <span>📖</span>
-        Comment ça marche ?
-      </h2>
-      
-      <div style="display:flex;flex-direction:column;gap:2rem;margin-top:2rem">
-        <div class="explanation-step">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>📥 Importer des photos</h3>
-            <p>Rendez-vous dans la section <strong>Importer</strong> pour scraper les photos de profil d'un serveur Discord.</p>
-            <ul>
-              <li>Entrez l'ID du serveur Discord</li>
-              <li>Cliquez sur "Démarrer l'import"</li>
-              <li>Le bot va scraper automatiquement toutes les photos de profil des membres</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="explanation-step">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>📊 Suivre la progression</h3>
-            <p>Consultez le <strong>Dashboard</strong> pour voir les statistiques en temps réel :</p>
-            <ul>
-              <li>Nombre total de photos scrapées</li>
-              <li>Nombre de serveurs analysés</li>
-              <li>Dernière activité</li>
-              <li>Statut du bot</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="explanation-step">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>📝 Consulter les logs</h3>
-            <p>La section <strong>Logs</strong> vous permet de :</p>
-            <ul>
-              <li>Voir l'historique de toutes les opérations</li>
-              <li>Détecter les erreurs éventuelles</li>
-              <li>Suivre l'activité du bot en temps réel</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="padding:1.5rem;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(124,58,237,0.1));border-radius:12px;border:1px solid rgba(59,130,246,0.3)">
-          <h3 style="margin:0 0 1rem;display:flex;align-items:center;gap:0.5rem;color:#000">
-            <span>💡</span>
-            Conseils d'utilisation
-          </h3>
-          <ul style="margin:0;padding-left:1.5rem;color:#000">
-            <li>Assurez-vous que le bot est en ligne avant de démarrer un import</li>
-            <li>Un serveur Discord peut contenir des milliers de membres, l'import peut prendre du temps</li>
-            <li>Les photos sont automatiquement sauvegardées dans la base de données</li>
-            <li>Vous pouvez consulter les logs pour voir les détails de chaque opération</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="importView" class="view">
-    <div class="card">
-      <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
-        <span>📥</span>
-        Importer des Photos
-      </h2>
-      <form id="importForm" style="margin-top:2rem">
-        <div class="form-group">
-          <label>ID du Serveur Discord</label>
-          <input type="text" id="guildId" placeholder="123456789012345678" required>
-        </div>
-        <div class="form-group">
-          <label>Lien Pinterest (optionnel)</label>
-          <input type="url" id="pinterestLink" placeholder="https://pinterest.com/...">
-        </div>
-        <div class="form-group">
-          <label>Catégorie</label>
-          <select id="category" required>
-            <option value="">Sélectionner une catégorie</option>
-            <option value="boy">👦 Boy</option>
-            <option value="girl">👧 Girl</option>
-            <option value="banner">🎨 Banner</option>
-            <option value="pdp">🖼️ PDP</option>
-            <option value="match">💑 Match</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Nombre de photos à uploader : <span id="photoCountValue" class="range-value">500</span></label>
-          <div class="range-container">
-            <input type="range" id="photoCount" min="1" max="1000" value="500" oninput="document.getElementById('photoCountValue').textContent = this.value">
-          </div>
-        </div>
-        <button type="submit">Démarrer l'import</button>
-      </form>
-      <div id="importProgress" style="display:none;margin-top:2rem">
-        <div style="background:rgba(124,58,237,0.2);border-radius:8px;height:8px;overflow:hidden">
-          <div id="progressBar" style="background:linear-gradient(90deg,var(--accent),#3b82f6);height:100%;width:0%;transition:width 0.3s ease"></div>
-        </div>
-        <p id="progressText" style="margin-top:1rem;color:#000;text-align:center"></p>
-      </div>
-    </div>
-  </div>
-
-  <div id="dashboardView" class="view">
-    <div class="card">
-      <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
-        <span>📊</span>
-        Dashboard
-      </h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value" id="totalPhotos">0</div>
-          <div class="stat-label">Photos scrapées</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="totalServers">0</div>
-          <div class="stat-label">Serveurs analysés</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="lastActivity">Jamais</div>
-          <div class="stat-label">Dernière activité</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="logsView" class="view">
-    <div class="card">
-      <h2 style="display:flex;align-items:center;gap:0.75rem;color:#000">
-        <span>📝</span>
-        Logs Système
-      </h2>
-      <div class="log-container" id="logContainer"></div>
-    </div>
-  </div>
-</div>
-```
-
   </div>
 
 <script>
@@ -592,6 +653,8 @@
     }
 
     function logout() {
+      localStorage.removeItem('discord_token');
+      localStorage.removeItem('discord_user');
       location.reload();
     }
 
@@ -608,12 +671,28 @@
       const token = params.get('access_token');
 
       if (token) {
+        localStorage.setItem('discord_token', token);
         const user = await fetchDiscordUser(token);
+        localStorage.setItem('discord_user', JSON.stringify(user));
         window.location.hash = '';
+        window.location.reload();
+      }
+
+      const savedToken = localStorage.getItem('discord_token');
+      const savedUser = localStorage.getItem('discord_user');
+
+      if (savedToken && savedUser) {
+        const user = JSON.parse(savedUser);
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('userInfo').style.display = 'flex';
         document.getElementById('userName').textContent = user.username;
+        document.getElementById('userAvatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+        
+        checkBotStatus();
+        setInterval(checkBotStatus, 30000);
+      }
+    });').textContent = user.username;
         document.getElementById('userAvatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
         
         checkBotStatus();
@@ -742,6 +821,5 @@
       }
     }
   </script>
-
 </body>
 </html>
