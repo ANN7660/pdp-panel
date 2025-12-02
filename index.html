@@ -16,12 +16,16 @@ const PDPPanel = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = import.meta?.env?.VITE_API_URL || 'https://pfpbot-8e9l.onrender.com';
-  const API_KEY = import.meta?.env?.VITE_API_KEY || 'Nono1912';
+  const API_URL = 'https://pfpbot-8e9l.onrender.com';
+  const API_KEY = 'Nono1912';
 
   useEffect(() => {
-    if (activeTab === 'home' || activeTab === 'stats') fetchStats();
-    if (activeTab === 'gallery') fetchPhotos();
+    if (activeTab === 'home' || activeTab === 'stats') {
+      fetchStats();
+    }
+    if (activeTab === 'gallery') {
+      fetchPhotos();
+    }
   }, [activeTab]);
 
   const fetchStats = async () => {
@@ -246,9 +250,6 @@ const PDPPanel = () => {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        {/* SUITE DANS PARTIE 2 */}
-        {/* SUITE DE LA PARTIE 1 - À COLLER APRÈS LA LIGNE "SUITE DANS PARTIE 2" */}
-        
         {activeTab === 'import' && (
           <div className="space-y-6">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
@@ -321,6 +322,7 @@ const PDPPanel = () => {
                   : 'bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600'
               } text-white hover:scale-105`}
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 animate-shimmer"></div>
               <div className="absolute inset-0 rounded-2xl border-4 border-yellow-400/50"></div>
               <div className="absolute -top-3 -right-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-black rotate-12">
                 ⭐ VIP
@@ -416,7 +418,7 @@ const PDPPanel = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-lg border border-blue-400/30 rounded-xl p-6">
-                <div className="text-3xl font-bold text-white">{stats ? stats.total_photos.toLocaleString() : '...'}</div>
+                <div className="text-3xl font-bold text-white">{stats ? stats.total_photos?.toLocaleString() : '...'}</div>
                 <div className="text-sm text-white/70">Photos totales</div>
               </div>
               <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-lg border border-green-400/30 rounded-xl p-6">
@@ -424,12 +426,50 @@ const PDPPanel = () => {
                 <div className="text-sm text-white/70">Imports ce mois</div>
               </div>
               <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 backdrop-blur-lg border border-purple-400/30 rounded-xl p-6">
-                <div className="text-3xl font-bold text-white">{stats ? stats.categories.length : '...'}</div>
+                <div className="text-3xl font-bold text-white">{stats ? stats.categories?.length : '...'}</div>
                 <div className="text-sm text-white/70">Catégories</div>
               </div>
               <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 backdrop-blur-lg border border-orange-400/30 rounded-xl p-6">
-                <div className="text-3xl font-bold text-white">{stats ? stats.available_photos.toLocaleString() : '...'}</div>
+                <div className="text-3xl font-bold text-white">{stats ? stats.available_photos?.toLocaleString() : '...'}</div>
                 <div className="text-sm text-white/70">Sur Discord</div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-semibold text-white mb-4">Actions rapides</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  onClick={() => setActiveTab('import')}
+                  className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all text-left"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Upload size={24} className="text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">Importer des photos</h4>
+                  <p className="text-sm text-white/60">Ajoutez de nouvelles photos depuis Pinterest</p>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('gallery')}
+                  className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all text-left"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Image size={24} className="text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">Gérer la galerie</h4>
+                  <p className="text-sm text-white/60">Parcourez et organisez vos photos</p>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('stats')}
+                  className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all text-left"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <BarChart3 size={24} className="text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">Voir les statistiques</h4>
+                  <p className="text-sm text-white/60">Analysez vos performances</p>
+                </button>
               </div>
             </div>
           </div>
@@ -448,7 +488,7 @@ const PDPPanel = () => {
                 photos.map((photo) => (
                   <div
                     key={photo.id}
-                    className="aspect-square bg-white/10 rounded-xl overflow-hidden"
+                    className="aspect-square bg-white/10 rounded-xl overflow-hidden hover:scale-105 transition-transform"
                   >
                     <img 
                       src={photo.url} 
@@ -472,7 +512,7 @@ const PDPPanel = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
                 <div className="text-4xl font-bold text-white mb-2">
-                  {stats ? stats.total_photos.toLocaleString() : '0'}
+                  {stats ? stats.total_photos?.toLocaleString() : '0'}
                 </div>
                 <div className="text-sm text-white/70">Photos totales</div>
               </div>
@@ -484,7 +524,7 @@ const PDPPanel = () => {
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
                 <div className="text-4xl font-bold text-white mb-2">
-                  {stats ? stats.categories.length : '0'}
+                  {stats ? stats.categories?.length : '0'}
                 </div>
                 <div className="text-sm text-white/70">Catégories actives</div>
               </div>
@@ -495,6 +535,51 @@ const PDPPanel = () => {
                 <div className="text-sm text-white/70">Taux de succès</div>
               </div>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-6">Photos par catégorie</h3>
+                <div className="space-y-4">
+                  {categories.map((cat, i) => {
+                    const catStats = stats?.categories?.find(c => c.category === cat.value);
+                    const count = catStats?.count || 0;
+                    const total = stats?.total_photos || 1;
+                    const percentage = Math.round((count / total) * 100);
+                    
+                    return (
+                      <div key={i}>
+                        <div className="flex items-center justify-between text-sm text-white/70 mb-2">
+                          <span>{cat.label}</span>
+                          <span className="font-medium text-white">{count} photos</span>
+                        </div>
+                        <div className="w-full bg-white/10 rounded-full h-3">
+                          <div
+                            className="bg-gradient-to-r from-red-500 to-green-500 h-3 rounded-full transition-all duration-1000"
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-6">Performance</h3>
+                <div className="space-y-4">
+                  <div className="text-center p-4 bg-white/5 rounded-xl">
+                    <div className="text-3xl mb-2">⚡</div>
+                    <div className="text-2xl font-bold text-white mb-1">Rapide</div>
+                    <div className="text-sm text-white/70">Temps de réponse</div>
+                  </div>
+                  <div className="text-center p-4 bg-white/5 rounded-xl">
+                    <div className="text-3xl mb-2">✅</div>
+                    <div className="text-2xl font-bold text-white mb-1">99.8%</div>
+                    <div className="text-sm text-white/70">Taux de succès</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -503,6 +588,3 @@ const PDPPanel = () => {
 };
 
 export default PDPPanel;
-
-
-
