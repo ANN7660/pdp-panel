@@ -15,303 +15,408 @@
 ```
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #e50914 0%, #b20710 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: drift 20s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes drift {
+        from { transform: translate(0, 0); }
+        to { transform: translate(50px, 50px); }
     }
 
     .container {
-        max-width: 900px;
+        max-width: 950px;
         margin: 0 auto;
         background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
     }
 
     .header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
 
     h1 {
-        color: #e50914;
-        font-size: 2.2em;
-        margin-bottom: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.8em;
+        margin-bottom: 12px;
+        font-weight: 800;
     }
 
     .subtitle {
-        color: #666;
-        font-size: 1.2em;
+        color: #718096;
+        font-size: 1.3em;
+        font-weight: 500;
     }
 
     .device-selector {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         justify-content: center;
-        margin: 30px 0;
+        margin: 40px 0;
     }
 
     .device-btn {
         flex: 1;
-        max-width: 200px;
-        padding: 20px;
+        max-width: 220px;
+        padding: 25px;
         border: 3px solid #e2e8f0;
-        border-radius: 15px;
+        border-radius: 20px;
         background: white;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .device-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transform: translate(-50%, -50%);
+        transition: width 0.5s, height 0.5s;
+        opacity: 0;
+        z-index: 0;
+    }
+
+    .device-btn:hover::before {
+        width: 300px;
+        height: 300px;
+        opacity: 0.1;
     }
 
     .device-btn:hover {
         border-color: #667eea;
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
     }
 
     .device-btn.active {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        border-color: #667eea;
+        border-color: transparent;
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
     }
 
     .device-icon {
-        font-size: 3em;
-        margin-bottom: 10px;
+        font-size: 3.5em;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s;
+    }
+
+    .device-btn:hover .device-icon {
+        transform: scale(1.15);
     }
 
     .device-label {
-        font-size: 1.2em;
-        font-weight: bold;
+        font-size: 1.3em;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
     }
 
     .content-section {
         display: none;
+        animation: fadeIn 0.5s ease-in;
     }
 
     .content-section.active {
         display: block;
     }
 
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     .hero {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 40px;
-        border-radius: 20px;
+        padding: 45px;
+        border-radius: 25px;
         text-align: center;
-        margin: 30px 0;
-        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        margin: 35px 0;
+        box-shadow: 0 20px 50px rgba(102, 126, 234, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 15s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
 
     .hero-title {
-        font-size: 2em;
-        font-weight: bold;
-        margin-bottom: 15px;
+        font-size: 2.2em;
+        font-weight: 800;
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 1;
     }
 
     .hero-text {
-        font-size: 1.2em;
-        line-height: 1.6;
+        font-size: 1.25em;
+        line-height: 1.8;
+        position: relative;
+        z-index: 1;
+        opacity: 0.95;
     }
 
     .bookmarklet-zone {
         background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        padding: 40px;
-        border-radius: 20px;
+        padding: 45px;
+        border-radius: 25px;
         text-align: center;
-        margin: 30px 0;
-        box-shadow: 0 15px 50px rgba(72, 187, 120, 0.4);
+        margin: 35px 0;
+        box-shadow: 0 20px 60px rgba(72, 187, 120, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bookmarklet-zone::after {
+        content: '✨';
+        position: absolute;
+        font-size: 4em;
+        opacity: 0.1;
+        animation: sparkle 3s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+        0%, 100% { top: 10%; left: 10%; }
+        25% { top: 80%; left: 80%; }
+        50% { top: 10%; left: 80%; }
+        75% { top: 80%; left: 10%; }
     }
 
     .bookmarklet-title {
         color: white;
-        font-size: 1.8em;
-        font-weight: bold;
-        margin-bottom: 25px;
+        font-size: 1.9em;
+        font-weight: 800;
+        margin-bottom: 30px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 1;
     }
 
     .bookmarklet-link {
         display: inline-block;
         background: white;
         color: #38a169;
-        padding: 20px 50px;
-        border-radius: 50px;
-        font-size: 1.5em;
-        font-weight: bold;
+        padding: 22px 55px;
+        border-radius: 60px;
+        font-size: 1.6em;
+        font-weight: 800;
         text-decoration: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: move;
         border: 4px dashed #38a169;
+        position: relative;
+        z-index: 1;
     }
 
     .bookmarklet-link:hover {
-        transform: scale(1.1);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        transform: scale(1.08) translateY(-5px);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+        border-style: solid;
     }
 
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        50% { transform: translateY(-12px); }
     }
 
     .bounce {
-        animation: bounce 2s infinite;
+        animation: bounce 2.5s ease-in-out infinite;
     }
 
     .instruction-box {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 20px;
-        border-radius: 12px;
-        margin-top: 25px;
+        background: rgba(255, 255, 255, 0.25);
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 30px;
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 1;
     }
 
     .instruction {
         color: white;
-        font-size: 1.1em;
-        line-height: 1.8;
+        font-size: 1.15em;
+        line-height: 2;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     .step {
-        background: #f7fafc;
-        border-left: 5px solid #667eea;
-        padding: 25px;
-        margin: 20px 0;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-left: 6px solid #667eea;
+        padding: 30px;
+        margin: 25px 0;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+    }
+
+    .step:hover {
+        transform: translateX(8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
     }
 
     .step-number {
         display: inline-block;
-        background: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
         text-align: center;
-        line-height: 40px;
-        font-weight: bold;
-        font-size: 1.3em;
-        margin-right: 15px;
+        line-height: 45px;
+        font-weight: 800;
+        font-size: 1.4em;
+        margin-right: 18px;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
     }
 
     .step-title {
-        font-size: 1.4em;
+        font-size: 1.5em;
         color: #2d3748;
-        margin-bottom: 12px;
-        font-weight: 600;
+        margin-bottom: 15px;
+        font-weight: 700;
     }
 
     .step-content {
         color: #4a5568;
-        font-size: 1.1em;
-        line-height: 1.7;
+        font-size: 1.15em;
+        line-height: 1.8;
     }
 
     .mobile-method-box {
         background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         color: white;
-        padding: 30px;
-        border-radius: 15px;
-        margin: 20px 0;
+        padding: 35px;
+        border-radius: 20px;
+        margin: 25px 0;
+        box-shadow: 0 15px 40px rgba(245, 158, 11, 0.3);
+        transition: transform 0.3s;
+    }
+
+    .mobile-method-box:hover {
+        transform: translateY(-5px);
     }
 
     .method-title {
-        font-size: 1.5em;
-        font-weight: bold;
-        margin-bottom: 15px;
+        font-size: 1.7em;
+        font-weight: 800;
+        margin-bottom: 20px;
     }
 
     .method-content {
-        font-size: 1.1em;
-        line-height: 1.7;
+        font-size: 1.15em;
+        line-height: 1.9;
     }
 
     .alert {
-        padding: 20px;
-        border-radius: 12px;
-        margin: 20px 0;
+        padding: 25px;
+        border-radius: 15px;
+        margin: 25px 0;
         font-weight: 600;
-        font-size: 1.05em;
+        font-size: 1.1em;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
 
     .alert-warning {
-        background: #fef3c7;
-        border-left: 5px solid #f59e0b;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 6px solid #f59e0b;
         color: #92400e;
     }
 
     .alert-info {
-        background: #dbeafe;
-        border-left: 5px solid #3b82f6;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 6px solid #3b82f6;
         color: #1e3a8a;
     }
 
     .alert-success {
-        background: #d1fae5;
-        border-left: 5px solid #10b981;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-left: 6px solid #10b981;
         color: #065f46;
-    }
-
-    .code-box {
-        background: #1a202c;
-        color: #68d391;
-        padding: 20px;
-        border-radius: 10px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.95em;
-        overflow-x: auto;
-        margin: 15px 0;
-        position: relative;
-    }
-
-    .copy-btn {
-        background: #48bb78;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .copy-btn:hover {
-        background: #38a169;
-        transform: scale(1.05);
-    }
-
-    .copy-btn.copied {
-        background: #38a169;
     }
 
     .footer {
         text-align: center;
-        margin-top: 50px;
-        padding-top: 30px;
-        border-top: 2px solid #e2e8f0;
+        margin-top: 60px;
+        padding-top: 35px;
+        border-top: 3px solid #e2e8f0;
         color: #718096;
     }
 
+    .footer p:first-child {
+        font-size: 1.25em;
+        font-weight: 800;
+        margin-bottom: 12px;
+        color: #4a5568;
+    }
+
     code {
-        background: #e2e8f0;
-        padding: 3px 8px;
-        border-radius: 4px;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+        padding: 5px 12px;
+        border-radius: 8px;
         font-family: 'Courier New', monospace;
         color: #667eea;
-        font-weight: bold;
+        font-weight: 800;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     @media (max-width: 768px) {
         .container {
-            padding: 20px;
+            padding: 25px;
         }
         
         h1 {
-            font-size: 1.8em;
+            font-size: 2.2em;
         }
         
         .device-selector {
@@ -320,6 +425,11 @@
         
         .device-btn {
             max-width: 100%;
+        }
+
+        .bookmarklet-link {
+            font-size: 1.3em;
+            padding: 18px 40px;
         }
     }
 </style>
@@ -334,7 +444,6 @@
         </div>
 
 ```
-    <!-- SÉLECTEUR PC/MOBILE -->
     <div class="device-selector">
         <div class="device-btn active" onclick="showDevice('pc')">
             <div class="device-icon">💻</div>
@@ -346,7 +455,6 @@
         </div>
     </div>
 
-    <!-- CONTENU PC -->
     <div id="pc-content" class="content-section active">
         <div class="hero">
             <div class="hero-title">✨ Version PC : Automatique</div>
@@ -406,116 +514,115 @@
         </div>
     </div>
 
-    <!-- CONTENU MOBILE -->
     <div id="mobile-content" class="content-section">
         <div class="hero">
-            <div class="hero-title">📱 Version Mobile</div>
+            <div class="hero-title">📱 Version Mobile : OUI, C'EST POSSIBLE !</div>
             <div class="hero-text">
-                Sur mobile, utilisez la méthode manuelle simplifiée
+                Bookmarklet fonctionnel sur mobile avec installation spéciale
             </div>
         </div>
 
-        <div class="alert alert-warning">
-            <strong>⚠️ Important :</strong><br>
-            Les bookmarklets ne fonctionnent pas bien sur mobile.<br>
-            Utilisez la méthode ci-dessous (simple et rapide).
+        <div class="alert alert-success">
+            <strong>✅ BONNE NOUVELLE :</strong><br>
+            Le bookmarklet FONCTIONNE sur mobile !<br>
+            Suivez l'installation ci-dessous (2 minutes).
         </div>
 
-        <!-- MÉTHODE 1 : COPIER URL PAR URL -->
-        <div class="mobile-method-box">
-            <div class="method-title">📋 Méthode Recommandée</div>
-            <div class="method-content">
-                <strong>Copier les URLs directement depuis Pinterest :</strong><br><br>
-                
-                Sur <strong>iOS (Safari/Chrome) :</strong><br>
-                1️⃣ Ouvrez Pinterest<br>
-                2️⃣ Appui long sur une image<br>
-                3️⃣ "Copier l'image" ou "Copier le lien"<br>
-                4️⃣ Collez dans Notes<br>
-                5️⃣ Répétez 10-20 fois<br>
-                6️⃣ Copiez tout le texte de Notes<br>
-                7️⃣ Collez sur Discord avec <code>!url</code><br><br>
-                
-                Sur <strong>Android (Chrome) :</strong><br>
-                1️⃣ Ouvrez Pinterest<br>
-                2️⃣ Appui long sur une image<br>
-                3️⃣ "Copier l'adresse de l'image"<br>
-                4️⃣ Collez dans Keep/Notes<br>
-                5️⃣ Répétez 10-20 fois<br>
-                6️⃣ Copiez tout<br>
-                7️⃣ Collez sur Discord avec <code>!url</code>
+        <div class="bookmarklet-zone">
+            <div class="bookmarklet-title bounce">📱 BOOKMARKLET MOBILE</div>
+            <div style="background: white; padding: 30px; border-radius: 15px; margin: 20px 0;">
+                <div style="color: #2d3748; font-size: 1.2em; font-weight: 700; margin-bottom: 15px;">
+                    📋 Copiez ce code :
+                </div>
+                <div style="background: #1a202c; color: #68d391; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.85em; word-break: break-all; line-height: 1.6;">
+```
+
+javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=new Set();document.querySelectorAll(‘img’).forEach(m=>{const s=m.src||m.dataset.src;if(s&&s.includes(‘pinimg.com’))i.add(s.split(’?’)[0])});const u=Array.from(i);if(!u.length){alert(‘❌ Aucune image trouvée.\nScrollez un peu et réessayez.’);return}const c=prompt(`✅ ${u.length} images trouvées!\\n\\nCombien en voulez-vous?\\n(nombre ou "all")`,‘all’);if(!c)return;let s;if(c.toLowerCase()===‘all’)s=u;else{const n=parseInt(c);if(isNaN(n)||n<=0){alert(‘❌ Nombre invalide’);return}s=u.slice(0,Math.min(n,u.length))}const t=s.join(’\n’);try{await navigator.clipboard.writeText(t)}catch(e){}const b=new Blob([t],{type:‘text/plain’}),o=URL.createObjectURL(b),a=document.createElement(‘a’);a.href=o;a.download=`pinterest-urls-${Date.now()}.txt`;a.click();URL.revokeObjectURL(o);alert(`✅ ${s.length} URLs exportées!\\n\\n📋 Copiées dans le presse-papier\\n💾 Fichier texte téléchargé\\n\\nAllez sur Discord et utilisez !url`)})();
+</div>
+<button class="copy-btn" onclick="copyBookmarkletCode()">
+📋 COPIER LE CODE
+</button>
+</div>
+
+```
+            <div class="instruction-box">
+                <div class="instruction" style="text-align: left;">
+                    <strong>📱 INSTALLATION SUR iOS (Safari) :</strong><br><br>
+                    1️⃣ Copiez le code ci-dessus (bouton "Copier")<br>
+                    2️⃣ Ajoutez cette page en favori (bouton Partager → Favoris)<br>
+                    3️⃣ Allez dans Réglages Safari → Favoris<br>
+                    4️⃣ Trouvez ce favori et appuyez sur "Modifier"<br>
+                    5️⃣ Dans le champ URL, COLLEZ le code copié<br>
+                    6️⃣ Renommez-le "Pinterest→Discord"<br>
+                    7️⃣ Sauvegardez ✅<br><br>
+                    
+                    <strong>📱 INSTALLATION SUR ANDROID (Chrome) :</strong><br><br>
+                    1️⃣ Copiez le code ci-dessus<br>
+                    2️⃣ Ajoutez cette page en favori (⭐)<br>
+                    3️⃣ Allez dans Favoris → Trouvez ce favori<br>
+                    4️⃣ Appuyez longuement → "Modifier"<br>
+                    5️⃣ Dans l'URL, COLLEZ le code copié<br>
+                    6️⃣ Renommez "Pinterest→Discord"<br>
+                    7️⃣ Sauvegardez ✅
+                </div>
             </div>
-        </div>
-
-        <!-- MÉTHODE 2 : PARTAGER VERS DISCORD -->
-        <div class="mobile-method-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <div class="method-title">🔗 Méthode Alternative</div>
-            <div class="method-content">
-                <strong>Partager directement :</strong><br><br>
-                
-                1️⃣ Sur Pinterest, ouvrez une image<br>
-                2️⃣ Appuyez sur le bouton "Partager" 📤<br>
-                3️⃣ Sélectionnez "Copier le lien"<br>
-                4️⃣ Collez dans un document texte<br>
-                5️⃣ Répétez pour plusieurs images<br>
-                6️⃣ Copiez tous les liens<br>
-                7️⃣ Collez sur Discord avec <code>!url</code>
-            </div>
-        </div>
-
-        <div class="alert alert-info">
-            <strong>💡 Astuce Mobile :</strong><br>
-            Créez une note nommée "Pinterest URLs" pour stocker les liens.<br>
-            Ajoutez-y des URLs au fur et à mesure, puis copiez tout d'un coup sur Discord.
         </div>
 
         <div class="step">
             <div class="step-title">
                 <span class="step-number">1</span>
-                Sur Pinterest Mobile
+                Installez le bookmarklet
             </div>
             <div class="step-content">
-                Ouvrez Pinterest app ou navigateur mobile<br>
-                Trouvez les images que vous voulez
+                Suivez les instructions ci-dessus pour installer le bookmarklet mobile<br>
+                (À faire UNE SEULE FOIS)
             </div>
         </div>
 
         <div class="step">
             <div class="step-title">
                 <span class="step-number">2</span>
-                Copiez les URLs
+                Sur Pinterest Mobile
             </div>
             <div class="step-content">
-                Appui long sur chaque image → "Copier l'image" ou "Copier le lien"<br>
-                Collez dans Notes/Keep
+                Ouvrez Pinterest (app ou navigateur)<br>
+                Scrollez pour charger des images
             </div>
         </div>
 
         <div class="step">
             <div class="step-title">
                 <span class="step-number">3</span>
-                Transférez sur Discord
+                Lancez le bookmarklet
             </div>
             <div class="step-content">
-                Copiez tout le contenu de votre note<br>
-                Sur Discord : <code>!url</code> → Collez<br>
-                Le bot détectera automatiquement les URLs !
+                Dans la barre d'adresse, tapez "Pinterest" pour trouver votre favori<br>
+                Sélectionnez-le → Extraction automatique ! 🚀
             </div>
         </div>
 
-        <div class="alert alert-success">
-            <strong>✅ Le bot Discord est intelligent !</strong><br>
-            Vous pouvez coller du texte avec plein d'URLs mélangées.<br>
-            Le bot va automatiquement détecter et extraire toutes les URLs d'images.
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">4</span>
+                Collez sur Discord
+            </div>
+            <div class="step-content">
+                Tapez <code>!url</code> puis collez (maintien long → Coller)<br>
+                C'est fait ! ✨
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>💡 Astuce :</strong><br>
+            Sur mobile, le bookmarklet fonctionne exactement comme sur PC !<br>
+            Une fois installé, c'est automatique à chaque fois.
         </div>
     </div>
 
     <div class="footer">
-        <p style="font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">
-            💬 Besoin d'aide ?
-        </p>
-        <p>Contactez le support du bot sur Discord</p>
-        <p style="margin-top: 20px; font-size: 0.9em;">
+        <p>💬 Besoin d'aide ?</p>
+        <p style="font-size: 1.05em; margin: 10px 0;">Contactez le support du bot sur Discord</p>
+        <p style="margin-top: 25px; font-size: 0.95em; color: #a0aec0;">
             Made with ❤️ for Discord Bot
         </p>
     </div>
@@ -523,17 +630,30 @@
 
 <script>
     function showDevice(device) {
-        // Mettre à jour les boutons
         document.querySelectorAll('.device-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         event.currentTarget.classList.add('active');
         
-        // Afficher le bon contenu
         document.querySelectorAll('.content-section').forEach(section => {
             section.classList.remove('active');
         });
         document.getElementById(device + '-content').classList.add('active');
+    }
+
+    function copyBookmarkletCode() {
+        const code = `javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=new Set();document.querySelectorAll('img').forEach(m=>{const s=m.src||m.dataset.src;if(s&&s.includes('pinimg.com'))i.add(s.split('?')[0])});const u=Array.from(i);if(!u.length){alert('❌ Aucune image trouvée.\\\\nScrollez un peu et réessayez.');return}const c=prompt(\`✅ \${u.length} images trouvées!\\\\n\\\\nCombien en voulez-vous?\\\\n(nombre ou "all")\`,'all');if(!c)return;let s;if(c.toLowerCase()==='all')s=u;else{const n=parseInt(c);if(isNaN(n)||n<=0){alert('❌ Nombre invalide');return}s=u.slice(0,Math.min(n,u.length))}const t=s.join('\\\\n');try{await navigator.clipboard.writeText(t)}catch(e){}const b=new Blob([t],{type:'text/plain'}),o=URL.createObjectURL(b),a=document.createElement('a');a.href=o;a.download=\`pinterest-urls-\${Date.now()}.txt\`;a.click();URL.revokeObjectURL(o);alert(\`✅ \${s.length} URLs exportées!\\\\n\\\\n📋 Copiées dans le presse-papier\\\\n💾 Fichier texte téléchargé\\\\n\\\\nAllez sur Discord et utilisez !url\`)})();`;
+        
+        navigator.clipboard.writeText(code).then(() => {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ COPIÉ !';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('copied');
+            }, 2000);
+        });
     }
 </script>
 ```
