@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinterest → Discord | PC & Mobile</title>
+    <meta name="description" content="Extracteur automatique d'images Pinterest vers Discord - PC et Mobile">
+    <meta name="author" content="Pinterest Discord Bot">
+    <title>Pinterest → Discord | Extracteur PC & Mobile</title>
     <style>
         * {
             margin: 0;
@@ -333,31 +335,6 @@
         line-height: 1.8;
     }
 
-    .mobile-method-box {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-        padding: 35px;
-        border-radius: 20px;
-        margin: 25px 0;
-        box-shadow: 0 15px 40px rgba(245, 158, 11, 0.3);
-        transition: transform 0.3s;
-    }
-
-    .mobile-method-box:hover {
-        transform: translateY(-5px);
-    }
-
-    .method-title {
-        font-size: 1.7em;
-        font-weight: 800;
-        margin-bottom: 20px;
-    }
-
-    .method-content {
-        font-size: 1.15em;
-        line-height: 1.9;
-    }
-
     .alert {
         padding: 25px;
         border-radius: 15px;
@@ -365,12 +342,6 @@
         font-weight: 600;
         font-size: 1.1em;
         box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    .alert-warning {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-left: 6px solid #f59e0b;
-        color: #92400e;
     }
 
     .alert-info {
@@ -408,6 +379,41 @@
         color: #667eea;
         font-weight: 800;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .code-box {
+        background: #1a202c;
+        color: #68d391;
+        padding: 20px;
+        border-radius: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85em;
+        word-break: break-all;
+        line-height: 1.6;
+        margin: 15px 0;
+    }
+
+    .copy-btn {
+        background: #48bb78;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        margin-top: 10px;
+        font-size: 1.1em;
+    }
+
+    .copy-btn:hover {
+        background: #38a169;
+        transform: scale(1.05);
+    }
+
+    .copy-btn.copied {
+        background: #38a169;
     }
 
     @media (max-width: 768px) {
@@ -534,17 +540,12 @@
                 <div style="color: #2d3748; font-size: 1.2em; font-weight: 700; margin-bottom: 15px;">
                     📋 Copiez ce code :
                 </div>
-                <div style="background: #1a202c; color: #68d391; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.85em; word-break: break-all; line-height: 1.6;">
-```
-
-javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=new Set();document.querySelectorAll(‘img’).forEach(m=>{const s=m.src||m.dataset.src;if(s&&s.includes(‘pinimg.com’))i.add(s.split(’?’)[0])});const u=Array.from(i);if(!u.length){alert(‘❌ Aucune image trouvée.\nScrollez un peu et réessayez.’);return}const c=prompt(`✅ ${u.length} images trouvées!\\n\\nCombien en voulez-vous?\\n(nombre ou "all")`,‘all’);if(!c)return;let s;if(c.toLowerCase()===‘all’)s=u;else{const n=parseInt(c);if(isNaN(n)||n<=0){alert(‘❌ Nombre invalide’);return}s=u.slice(0,Math.min(n,u.length))}const t=s.join(’\n’);try{await navigator.clipboard.writeText(t)}catch(e){}const b=new Blob([t],{type:‘text/plain’}),o=URL.createObjectURL(b),a=document.createElement(‘a’);a.href=o;a.download=`pinterest-urls-${Date.now()}.txt`;a.click();URL.revokeObjectURL(o);alert(`✅ ${s.length} URLs exportées!\\n\\n📋 Copiées dans le presse-papier\\n💾 Fichier texte téléchargé\\n\\nAllez sur Discord et utilisez !url`)})();
-</div>
-<button class="copy-btn" onclick="copyBookmarkletCode()">
-📋 COPIER LE CODE
-</button>
-</div>
-
-```
+                <div class="code-box">javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=new Set();document.querySelectorAll('img').forEach(m=>{const s=m.src||m.dataset.src;if(s&&s.includes('pinimg.com'))i.add(s.split('?')[0])});const u=Array.from(i);if(!u.length){alert('❌ Aucune image trouvée.\\nScrollez un peu et réessayez.');return}const c=prompt(`✅ ${u.length} images trouvées!\\n\\nCombien en voulez-vous?\\n(nombre ou "all")`,'all');if(!c)return;let s;if(c.toLowerCase()==='all')s=u;else{const n=parseInt(c);if(isNaN(n)||n<=0){alert('❌ Nombre invalide');return}s=u.slice(0,Math.min(n,u.length))}const t=s.join('\\n');try{await navigator.clipboard.writeText(t)}catch(e){}const b=new Blob([t],{type:'text/plain'}),o=URL.createObjectURL(b),a=document.createElement('a');a.href=o;a.download=`pinterest-urls-${Date.now()}.txt`;a.click();URL.revokeObjectURL(o);alert(`✅ ${s.length} URLs exportées!\\n\\n📋 Copiées dans le presse-papier\\n💾 Fichier texte téléchargé\\n\\nAllez sur Discord et utilisez !url`)})();</div>
+                <button class="copy-btn" onclick="copyBookmarkletCode()">
+                    📋 COPIER LE CODE
+                </button>
+            </div>
+            
             <div class="instruction-box">
                 <div class="instruction" style="text-align: left;">
                     <strong>📱 INSTALLATION SUR iOS (Safari) :</strong><br><br>
@@ -653,6 +654,8 @@ javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=ne
                 btn.textContent = originalText;
                 btn.classList.remove('copied');
             }, 2000);
+        }).catch(() => {
+            alert('Erreur de copie. Sélectionnez et copiez manuellement le code ci-dessus.');
         });
     }
 </script>
