@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinterest → Discord | Scraper Automatique</title>
+    <title>Pinterest → Discord | PC & Mobile</title>
     <style>
         * {
             margin: 0;
@@ -25,112 +25,135 @@
         margin: 0 auto;
         background: white;
         border-radius: 20px;
-        padding: 40px;
+        padding: 30px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
 
     .header {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
     }
 
     h1 {
         color: #e50914;
-        font-size: 2.8em;
+        font-size: 2.2em;
         margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
     .subtitle {
         color: #666;
-        font-size: 1.3em;
-        font-weight: 500;
+        font-size: 1.2em;
+    }
+
+    .device-selector {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin: 30px 0;
+    }
+
+    .device-btn {
+        flex: 1;
+        max-width: 200px;
+        padding: 20px;
+        border: 3px solid #e2e8f0;
+        border-radius: 15px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .device-btn:hover {
+        border-color: #667eea;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+    }
+
+    .device-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+
+    .device-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+    }
+
+    .device-label {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .content-section {
+        display: none;
+    }
+
+    .content-section.active {
+        display: block;
     }
 
     .hero {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 50px;
+        padding: 40px;
         border-radius: 20px;
         text-align: center;
-        margin-bottom: 40px;
+        margin: 30px 0;
         box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
     }
 
     .hero-title {
-        font-size: 2.5em;
+        font-size: 2em;
         font-weight: bold;
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 15px;
     }
 
     .hero-text {
-        font-size: 1.3em;
-        line-height: 1.8;
+        font-size: 1.2em;
+        line-height: 1.6;
     }
 
     .bookmarklet-zone {
         background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        padding: 50px;
+        padding: 40px;
         border-radius: 20px;
         text-align: center;
-        margin: 40px 0;
+        margin: 30px 0;
         box-shadow: 0 15px 50px rgba(72, 187, 120, 0.4);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .bookmarklet-zone::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 4s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { transform: scale(1) rotate(0deg); }
-        50% { transform: scale(1.1) rotate(180deg); }
     }
 
     .bookmarklet-title {
         color: white;
-        font-size: 2em;
+        font-size: 1.8em;
         font-weight: bold;
-        margin-bottom: 30px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        position: relative;
-        z-index: 1;
+        margin-bottom: 25px;
     }
 
     .bookmarklet-link {
         display: inline-block;
         background: white;
         color: #38a169;
-        padding: 25px 60px;
-        border-radius: 60px;
-        font-size: 1.8em;
+        padding: 20px 50px;
+        border-radius: 50px;
+        font-size: 1.5em;
         font-weight: bold;
         text-decoration: none;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         transition: all 0.3s;
         cursor: move;
         border: 4px dashed #38a169;
-        position: relative;
-        z-index: 1;
     }
 
     .bookmarklet-link:hover {
-        transform: scale(1.1) rotate(-2deg);
+        transform: scale(1.1);
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
     }
 
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-15px); }
+        50% { transform: translateY(-10px); }
     }
 
     .bounce {
@@ -139,198 +162,165 @@
 
     .instruction-box {
         background: rgba(255, 255, 255, 0.2);
-        padding: 25px;
-        border-radius: 15px;
-        margin-top: 30px;
-        position: relative;
-        z-index: 1;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 25px;
     }
 
     .instruction {
         color: white;
-        font-size: 1.3em;
+        font-size: 1.1em;
         line-height: 1.8;
-    }
-
-    .instruction strong {
-        background: rgba(255, 255, 255, 0.3);
-        padding: 5px 12px;
-        border-radius: 5px;
-    }
-
-    .step-container {
-        margin: 50px 0;
-    }
-
-    .step-header {
-        text-align: center;
-        color: #2d3748;
-        margin-bottom: 40px;
-        font-size: 2.2em;
-        font-weight: bold;
     }
 
     .step {
         background: #f7fafc;
-        border-left: 6px solid #667eea;
-        padding: 30px;
-        margin: 25px 0;
-        border-radius: 15px;
+        border-left: 5px solid #667eea;
+        padding: 25px;
+        margin: 20px 0;
+        border-radius: 12px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
-    }
-
-    .step:hover {
-        transform: translateX(10px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
     }
 
     .step-number {
         display: inline-block;
         background: #667eea;
         color: white;
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         text-align: center;
-        line-height: 50px;
+        line-height: 40px;
         font-weight: bold;
-        font-size: 1.5em;
-        margin-right: 20px;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        font-size: 1.3em;
+        margin-right: 15px;
     }
 
     .step-title {
-        font-size: 1.6em;
+        font-size: 1.4em;
         color: #2d3748;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
         font-weight: 600;
     }
 
     .step-content {
         color: #4a5568;
-        font-size: 1.2em;
-        line-height: 1.8;
+        font-size: 1.1em;
+        line-height: 1.7;
+    }
+
+    .mobile-method-box {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 20px 0;
+    }
+
+    .method-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .method-content {
+        font-size: 1.1em;
+        line-height: 1.7;
     }
 
     .alert {
-        padding: 25px;
-        border-radius: 15px;
-        margin: 25px 0;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
         font-weight: 600;
-        font-size: 1.1em;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        font-size: 1.05em;
     }
 
     .alert-warning {
         background: #fef3c7;
-        border-left: 6px solid #f59e0b;
+        border-left: 5px solid #f59e0b;
         color: #92400e;
     }
 
     .alert-info {
         background: #dbeafe;
-        border-left: 6px solid #3b82f6;
+        border-left: 5px solid #3b82f6;
         color: #1e3a8a;
     }
 
     .alert-success {
         background: #d1fae5;
-        border-left: 6px solid #10b981;
+        border-left: 5px solid #10b981;
         color: #065f46;
     }
 
-    .demo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 25px;
-        margin: 40px 0;
+    .code-box {
+        background: #1a202c;
+        color: #68d391;
+        padding: 20px;
+        border-radius: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.95em;
+        overflow-x: auto;
+        margin: 15px 0;
+        position: relative;
     }
 
-    .demo-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
+    .copy-btn {
+        background: #48bb78;
         color: white;
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
         transition: all 0.3s;
+        width: 100%;
+        margin-top: 10px;
     }
 
-    .demo-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    .copy-btn:hover {
+        background: #38a169;
+        transform: scale(1.05);
     }
 
-    .demo-icon {
-        font-size: 3.5em;
-        margin-bottom: 15px;
-    }
-
-    .demo-text {
-        font-size: 1.2em;
-        font-weight: 600;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin: 40px 0;
-    }
-
-    .feature {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        border: 2px solid #e2e8f0;
-        transition: all 0.3s;
-    }
-
-    .feature:hover {
-        border-color: #667eea;
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
-    }
-
-    .feature-icon {
-        font-size: 2.5em;
-        margin-bottom: 15px;
-    }
-
-    .feature-title {
-        font-size: 1.3em;
-        font-weight: 600;
-        color: #2d3748;
-        margin-bottom: 10px;
-    }
-
-    .feature-text {
-        color: #4a5568;
-        line-height: 1.6;
+    .copy-btn.copied {
+        background: #38a169;
     }
 
     .footer {
         text-align: center;
-        margin-top: 60px;
-        padding-top: 40px;
-        border-top: 3px solid #e2e8f0;
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 2px solid #e2e8f0;
         color: #718096;
-    }
-
-    .footer-title {
-        font-size: 1.3em;
-        font-weight: bold;
-        margin-bottom: 15px;
-        color: #2d3748;
     }
 
     code {
         background: #e2e8f0;
-        padding: 4px 10px;
-        border-radius: 5px;
+        padding: 3px 8px;
+        border-radius: 4px;
         font-family: 'Courier New', monospace;
-        font-weight: bold;
         color: #667eea;
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+        }
+        
+        .device-selector {
+            flex-direction: column;
+        }
+        
+        .device-btn {
+            max-width: 100%;
+        }
     }
 </style>
 ```
@@ -340,190 +330,212 @@
     <div class="container">
         <div class="header">
             <h1>🚀 Pinterest → Discord</h1>
-            <p class="subtitle">Extracteur Automatique 100% Autonome</p>
+            <p class="subtitle">Extracteur d'Images pour PC & Mobile</p>
         </div>
 
 ```
-    <div class="hero">
-        <div class="hero-title">✨ Installation : 5 secondes ✨</div>
-        <div class="hero-text">
-            Glissez le bouton dans vos favoris,<br>
-            cliquez sur Pinterest = les URLs sont copiées automatiquement !
+    <!-- SÉLECTEUR PC/MOBILE -->
+    <div class="device-selector">
+        <div class="device-btn active" onclick="showDevice('pc')">
+            <div class="device-icon">💻</div>
+            <div class="device-label">PC / Mac</div>
+        </div>
+        <div class="device-btn" onclick="showDevice('mobile')">
+            <div class="device-icon">📱</div>
+            <div class="device-label">Mobile</div>
         </div>
     </div>
 
-    <!-- BOOKMARKLET AUTONOME -->
-    <div class="bookmarklet-zone">
-        <div class="bookmarklet-title bounce">👇 GLISSEZ CE BOUTON DANS VOS FAVORIS 👇</div>
-        <a href="javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=new Set();document.querySelectorAll('img').forEach(m=>{const s=m.src||m.dataset.src;if(s&&s.includes('pinimg.com'))i.add(s.split('?')[0])});const u=Array.from(i);if(!u.length){alert('❌ Aucune image trouvée.\\nScrollez un peu et réessayez.');return}const c=prompt(`✅ ${u.length} images trouvées!\\n\\nCombien en voulez-vous?\\n(nombre ou \"all\")`,'all');if(!c)return;let s;if(c.toLowerCase()==='all')s=u;else{const n=parseInt(c);if(isNaN(n)||n<=0){alert('❌ Nombre invalide');return}s=u.slice(0,Math.min(n,u.length))}const t=s.join('\\n');await navigator.clipboard.writeText(t);const b=new Blob([t],{type:'text/plain'}),o=URL.createObjectURL(b),a=document.createElement('a');a.href=o;a.download=`pinterest-urls-${Date.now()}.txt`;a.click();URL.revokeObjectURL(o);alert(`✅ ${s.length} URLs exportées!\\n\\n📋 Copiées dans le presse-papier\\n💾 Fichier texte téléchargé\\n\\nAllez sur Discord et utilisez !url`)})();" 
-           class="bookmarklet-link"
-           onclick="alert('⚠️ Ne cliquez pas ici !\\n\\n👉 GLISSEZ ce bouton dans votre barre de favoris avec la souris.\\n\\nAppuyez sur Ctrl+Shift+B (Windows) ou Cmd+Shift+B (Mac) pour afficher la barre de favoris.'); return false;">
-            📌 Pinterest → Discord
-        </a>
-        
-        <div class="instruction-box">
-            <div class="instruction">
-                <strong>Comment faire :</strong><br><br>
-                1️⃣ Affichez votre barre de favoris<br>
-                <small>(Ctrl+Shift+B sur Windows • Cmd+Shift+B sur Mac)</small><br><br>
-                2️⃣ <strong>Glissez-déposez</strong> le bouton vert ci-dessus dans cette barre<br><br>
-                3️⃣ ✅ C'est installé ! Ne le faites qu'une seule fois.
+    <!-- CONTENU PC -->
+    <div id="pc-content" class="content-section active">
+        <div class="hero">
+            <div class="hero-title">✨ Version PC : Automatique</div>
+            <div class="hero-text">
+                Installez le bookmarklet en 5 secondes,<br>
+                puis cliquez dessus sur Pinterest = extraction automatique !
             </div>
         </div>
-    </div>
 
-    <div class="alert alert-success">
-        <strong>✨ 100% Autonome :</strong><br>
-        Aucun fichier externe, aucune dépendance, aucun serveur nécessaire !<br>
-        Tout le code est dans le bouton. Fonctionne partout, tout le temps.
-    </div>
-
-    <!-- ÉTAPES D'UTILISATION -->
-    <div class="step-container">
-        <h2 class="step-header">📖 Mode d'emploi</h2>
+        <div class="bookmarklet-zone">
+            <div class="bookmarklet-title bounce">👇 GLISSEZ CE BOUTON DANS VOS FAVORIS 👇</div>
+            <a href="javascript:(async function(){await new Promise(r=>setTimeout(r,1500));const i=new Set();document.querySelectorAll('img').forEach(m=>{const s=m.src||m.dataset.src;if(s&&s.includes('pinimg.com'))i.add(s.split('?')[0])});const u=Array.from(i);if(!u.length){alert('❌ Aucune image trouvée.\\nScrollez un peu et réessayez.');return}const c=prompt(`✅ ${u.length} images trouvées!\\n\\nCombien en voulez-vous?\\n(nombre ou \"all\")`,'all');if(!c)return;let s;if(c.toLowerCase()==='all')s=u;else{const n=parseInt(c);if(isNaN(n)||n<=0){alert('❌ Nombre invalide');return}s=u.slice(0,Math.min(n,u.length))}const t=s.join('\\n');await navigator.clipboard.writeText(t);const b=new Blob([t],{type:'text/plain'}),o=URL.createObjectURL(b),a=document.createElement('a');a.href=o;a.download=`pinterest-urls-${Date.now()}.txt`;a.click();URL.revokeObjectURL(o);alert(`✅ ${s.length} URLs exportées!\\n\\n📋 Copiées dans le presse-papier\\n💾 Fichier texte téléchargé\\n\\nAllez sur Discord et utilisez !url`)})();" 
+               class="bookmarklet-link"
+               onclick="alert('⚠️ Ne cliquez pas ici !\\n\\n👉 GLISSEZ ce bouton dans votre barre de favoris.\\n\\nAppuyez sur Ctrl+Shift+B (Windows) ou Cmd+Shift+B (Mac) pour afficher la barre.'); return false;">
+                📌 Pinterest → Discord
+            </a>
+            
+            <div class="instruction-box">
+                <div class="instruction">
+                    <strong>Installation :</strong><br>
+                    1️⃣ Affichez votre barre de favoris (Ctrl+Shift+B)<br>
+                    2️⃣ Glissez le bouton vert dans cette barre<br>
+                    3️⃣ ✅ Installé ! (une seule fois)
+                </div>
+            </div>
+        </div>
 
         <div class="step">
             <div class="step-title">
                 <span class="step-number">1</span>
-                Installez le bouton (une seule fois)
+                Allez sur Pinterest et scrollez
             </div>
             <div class="step-content">
-                Glissez le bouton vert <strong>"📌 Pinterest → Discord"</strong> dans vos favoris.<br>
-                Vous ne le faites qu'une fois, c'est comme installer une extension !
+                Ouvrez une page Pinterest et scrollez pour charger 50-100 images
             </div>
         </div>
 
         <div class="step">
             <div class="step-title">
                 <span class="step-number">2</span>
-                Allez sur Pinterest
+                Cliquez sur le favori
             </div>
             <div class="step-content">
-                Ouvrez n'importe quelle page Pinterest avec des images :<br>
-                • Recherche : <a href="https://fr.pinterest.com/search/pins/?q=pdp%20girl" target="_blank" style="color: #667eea;">exemple</a><br>
-                • Board personnel<br>
-                • Profil d'utilisateur<br>
-                • N'importe quelle page avec des images !
+                Cliquez sur "📌 Pinterest → Discord" dans vos favoris<br>
+                → Les URLs sont automatiquement copiées !
             </div>
         </div>
 
         <div class="step">
             <div class="step-title">
                 <span class="step-number">3</span>
-                Scrollez pour charger des images
+                Collez sur Discord
             </div>
             <div class="step-content">
-                Scrollez sur la page pour charger 50-100 images.<br>
-                Pinterest charge les images progressivement au scroll.<br>
-                <strong>💡 Astuce :</strong> Plus vous scrollez, plus vous aurez d'images !
+                Tapez <code>!url</code> sur Discord puis collez (Ctrl+V)
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENU MOBILE -->
+    <div id="mobile-content" class="content-section">
+        <div class="hero">
+            <div class="hero-title">📱 Version Mobile</div>
+            <div class="hero-text">
+                Sur mobile, utilisez la méthode manuelle simplifiée
+            </div>
+        </div>
+
+        <div class="alert alert-warning">
+            <strong>⚠️ Important :</strong><br>
+            Les bookmarklets ne fonctionnent pas bien sur mobile.<br>
+            Utilisez la méthode ci-dessous (simple et rapide).
+        </div>
+
+        <!-- MÉTHODE 1 : COPIER URL PAR URL -->
+        <div class="mobile-method-box">
+            <div class="method-title">📋 Méthode Recommandée</div>
+            <div class="method-content">
+                <strong>Copier les URLs directement depuis Pinterest :</strong><br><br>
+                
+                Sur <strong>iOS (Safari/Chrome) :</strong><br>
+                1️⃣ Ouvrez Pinterest<br>
+                2️⃣ Appui long sur une image<br>
+                3️⃣ "Copier l'image" ou "Copier le lien"<br>
+                4️⃣ Collez dans Notes<br>
+                5️⃣ Répétez 10-20 fois<br>
+                6️⃣ Copiez tout le texte de Notes<br>
+                7️⃣ Collez sur Discord avec <code>!url</code><br><br>
+                
+                Sur <strong>Android (Chrome) :</strong><br>
+                1️⃣ Ouvrez Pinterest<br>
+                2️⃣ Appui long sur une image<br>
+                3️⃣ "Copier l'adresse de l'image"<br>
+                4️⃣ Collez dans Keep/Notes<br>
+                5️⃣ Répétez 10-20 fois<br>
+                6️⃣ Copiez tout<br>
+                7️⃣ Collez sur Discord avec <code>!url</code>
+            </div>
+        </div>
+
+        <!-- MÉTHODE 2 : PARTAGER VERS DISCORD -->
+        <div class="mobile-method-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="method-title">🔗 Méthode Alternative</div>
+            <div class="method-content">
+                <strong>Partager directement :</strong><br><br>
+                
+                1️⃣ Sur Pinterest, ouvrez une image<br>
+                2️⃣ Appuyez sur le bouton "Partager" 📤<br>
+                3️⃣ Sélectionnez "Copier le lien"<br>
+                4️⃣ Collez dans un document texte<br>
+                5️⃣ Répétez pour plusieurs images<br>
+                6️⃣ Copiez tous les liens<br>
+                7️⃣ Collez sur Discord avec <code>!url</code>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>💡 Astuce Mobile :</strong><br>
+            Créez une note nommée "Pinterest URLs" pour stocker les liens.<br>
+            Ajoutez-y des URLs au fur et à mesure, puis copiez tout d'un coup sur Discord.
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">1</span>
+                Sur Pinterest Mobile
+            </div>
+            <div class="step-content">
+                Ouvrez Pinterest app ou navigateur mobile<br>
+                Trouvez les images que vous voulez
             </div>
         </div>
 
         <div class="step">
             <div class="step-title">
-                <span class="step-number">4</span>
-                Cliquez sur le favori
+                <span class="step-number">2</span>
+                Copiez les URLs
             </div>
             <div class="step-content">
-                Dans votre barre de favoris, cliquez sur <strong>"📌 Pinterest → Discord"</strong><br><br>
-                <strong>✨ Le script va :</strong><br>
-                • Scanner toutes les images chargées<br>
-                • Vous demander combien vous en voulez<br>
-                • Copier les URLs dans le presse-papier<br>
-                • Télécharger un fichier texte avec les URLs
+                Appui long sur chaque image → "Copier l'image" ou "Copier le lien"<br>
+                Collez dans Notes/Keep
             </div>
         </div>
 
         <div class="step">
             <div class="step-title">
-                <span class="step-number">5</span>
-                Importez sur Discord
+                <span class="step-number">3</span>
+                Transférez sur Discord
             </div>
             <div class="step-content">
-                Les URLs sont maintenant copiées ! Sur Discord :<br>
-                1. Tapez <code>!url</code><br>
-                2. Collez (Ctrl+V ou Cmd+V)<br>
-                3. Suivez les instructions du bot<br>
-                4. Profitez de vos images ! 🎉
+                Copiez tout le contenu de votre note<br>
+                Sur Discord : <code>!url</code> → Collez<br>
+                Le bot détectera automatiquement les URLs !
             </div>
         </div>
-    </div>
 
-    <!-- DÉMO VISUELLE -->
-    <h2 class="step-header">⚡ En action</h2>
-    <div class="demo-grid">
-        <div class="demo-card">
-            <div class="demo-icon">🌐</div>
-            <div class="demo-text">Ouvrez<br>Pinterest</div>
+        <div class="alert alert-success">
+            <strong>✅ Le bot Discord est intelligent !</strong><br>
+            Vous pouvez coller du texte avec plein d'URLs mélangées.<br>
+            Le bot va automatiquement détecter et extraire toutes les URLs d'images.
         </div>
-        <div class="demo-card">
-            <div class="demo-icon">📜</div>
-            <div class="demo-text">Scrollez<br>un peu</div>
-        </div>
-        <div class="demo-card">
-            <div class="demo-icon">⭐</div>
-            <div class="demo-text">Cliquez sur<br>le favori</div>
-        </div>
-        <div class="demo-card">
-            <div class="demo-icon">✅</div>
-            <div class="demo-text">URLs<br>copiées !</div>
-        </div>
-    </div>
-
-    <!-- AVANTAGES -->
-    <h2 class="step-header">🎁 Avantages</h2>
-    <div class="features-grid">
-        <div class="feature">
-            <div class="feature-icon">⚡</div>
-            <div class="feature-title">Ultra Rapide</div>
-            <div class="feature-text">30 secondes pour extraire 100+ images</div>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">🔒</div>
-            <div class="feature-title">100% Autonome</div>
-            <div class="feature-text">Aucun serveur externe, tout est local</div>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">♻️</div>
-            <div class="feature-title">Réutilisable</div>
-            <div class="feature-text">Installez une fois, utilisez à l'infini</div>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">📋</div>
-            <div class="feature-title">Double Export</div>
-            <div class="feature-text">Presse-papier + fichier téléchargeable</div>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">🎯</div>
-            <div class="feature-title">Choix Précis</div>
-            <div class="feature-text">Choisissez exactement combien d'images</div>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">🔓</div>
-            <div class="feature-title">Pas d'Extension</div>
-            <div class="feature-text">Pas besoin d'installer une extension</div>
-        </div>
-    </div>
-
-    <div class="alert alert-info">
-        <strong>💡 Astuce Pro :</strong><br>
-        Vous pouvez exécuter le bookmarklet plusieurs fois sur la même page après avoir scrollé davantage pour obtenir de nouvelles images !
-    </div>
-
-    <div class="alert alert-warning">
-        <strong>⚠️ Important :</strong><br>
-        Assurez-vous d'avoir scrollé sur Pinterest pour charger des images avant de cliquer sur le bookmarklet. Pinterest charge les images progressivement au scroll.
     </div>
 
     <div class="footer">
-        <p class="footer-title">💬 Besoin d'aide ?</p>
-        <p style="margin-bottom: 20px;">Contactez le support du bot sur Discord</p>
-        <p style="font-size: 0.95em;">
-            Made with ❤️ for Discord Bot • Respecte les Terms of Service de Pinterest<br>
-            <small>Le bookmarklet fonctionne 100% localement dans votre navigateur</small>
+        <p style="font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">
+            💬 Besoin d'aide ?
+        </p>
+        <p>Contactez le support du bot sur Discord</p>
+        <p style="margin-top: 20px; font-size: 0.9em;">
+            Made with ❤️ for Discord Bot
         </p>
     </div>
 </div>
+
+<script>
+    function showDevice(device) {
+        // Mettre à jour les boutons
+        document.querySelectorAll('.device-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+        
+        // Afficher le bon contenu
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(device + '-content').classList.add('active');
+    }
+</script>
 ```
 
 </body>
