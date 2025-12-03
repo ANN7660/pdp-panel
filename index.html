@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDP Panel V1 - Gestionnaire de Photos Discord</title>
+    <title>PDP Panel V2 - Gestionnaire de Photos Discord</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -20,8 +20,6 @@
         const Image = () => <span>🖼️</span>;
         const BarChart3 = () => <span>📊</span>;
         const Home = () => <span>🏠</span>;
-        const Snowflake = () => <span>❄️</span>;
-        const Gift = () => <span>🎁</span>;
 
         const PDPPanel = () => {
           const [activeTab, setActiveTab] = useState('home');
@@ -37,6 +35,8 @@
           const [stats, setStats] = useState(null);
           const [photos, setPhotos] = useState([]);
           const [loading, setLoading] = useState(false);
+          const [lights, setLights] = useState([]);
+          const [santaSleigh, setSantaSleigh] = useState({ x: -200, show: false });
 
           const API_URL = 'https://pfpbot-api.onrender.com';
           const API_KEY = 'Nono1912';
@@ -81,27 +81,55 @@
             }
           };
 
+          // Flocons de neige améliorés
           useEffect(() => {
             if (christmasMode) {
-              const flakes = Array.from({ length: 30 }, (_, i) => ({
+              const flakes = Array.from({ length: 50 }, (_, i) => ({
                 id: i,
                 left: Math.random() * 100,
                 delay: Math.random() * 5,
-                duration: 5 + Math.random() * 5,
-                size: 10 + Math.random() * 20
+                duration: 8 + Math.random() * 7,
+                size: 12 + Math.random() * 25,
+                opacity: 0.3 + Math.random() * 0.7,
+                drift: Math.random() * 50 - 25
               }));
               setSnowflakes(flakes);
+
+              // Guirlandes lumineuses
+              const lightColors = ['#ff0000', '#00ff00', '#ffff00', '#0000ff', '#ff00ff', '#00ffff'];
+              const newLights = Array.from({ length: 30 }, (_, i) => ({
+                id: i,
+                left: (i * 3.33) + (Math.random() * 2),
+                color: lightColors[Math.floor(Math.random() * lightColors.length)],
+                delay: Math.random() * 2
+              }));
+              setLights(newLights);
+            }
+          }, [christmasMode]);
+
+          // Traineau du Père Noël
+          useEffect(() => {
+            if (christmasMode) {
+              const interval = setInterval(() => {
+                setSantaSleigh(prev => {
+                  if (prev.x > window.innerWidth + 200) {
+                    return { x: -200, show: Math.random() < 0.3 };
+                  }
+                  return { ...prev, x: prev.x + 3 };
+                });
+              }, 50);
+              return () => clearInterval(interval);
             }
           }, [christmasMode]);
 
           const categories = [
-            { value: 'boy', label: '👦 Boy' },
-            { value: 'girl', label: '👧 Girl' },
-            { value: 'anime', label: '🎌 Anime' },
-            { value: 'aesthetic', label: '✨ Aesthetic' },
-            { value: 'cute', label: '🥰 Cute' },
-            { value: 'banner', label: '🎨 Banner' },
-            { value: 'match', label: '💕 Match' }
+            { value: 'boy', label: '👦 Boy', gradient: 'from-blue-500 to-cyan-500' },
+            { value: 'girl', label: '👧 Girl', gradient: 'from-pink-500 to-purple-500' },
+            { value: 'anime', label: '🎌 Anime', gradient: 'from-red-500 to-orange-500' },
+            { value: 'aesthetic', label: '✨ Aesthetic', gradient: 'from-purple-500 to-indigo-500' },
+            { value: 'cute', label: '🥰 Cute', gradient: 'from-yellow-400 to-pink-400' },
+            { value: 'banner', label: '🎨 Banner', gradient: 'from-green-500 to-teal-500' },
+            { value: 'match', label: '💕 Match', gradient: 'from-red-400 to-pink-500' }
           ];
 
           const handleImport = async () => {
@@ -186,419 +214,845 @@
           const TabButton = ({ name, icon: Icon, label }) => (
             <button
               onClick={() => setActiveTab(name)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
+              className={`relative flex items-center gap-2 px-8 py-4 rounded-2xl font-bold transition-all transform hover:scale-105 ${
                 activeTab === name
                   ? christmasMode
-                    ? 'bg-gradient-to-r from-red-500 to-green-500 text-white shadow-lg scale-105'
-                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg scale-105'
+                    ? 'bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white shadow-2xl scale-105 animate-pulse'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-2xl scale-105'
                   : christmasMode
-                  ? 'bg-red-900/20 text-red-100 hover:bg-red-900/30'
+                  ? 'bg-red-900/30 text-red-100 hover:bg-red-900/40 backdrop-blur-lg border border-red-500/30'
                   : 'bg-white/10 text-white hover:bg-white/20'
               }`}
             >
+              {activeTab === name && christmasMode && (
+                <span className="absolute -top-2 -right-2 text-2xl animate-bounce">⭐</span>
+              )}
               <Icon />
-              <span>{label}</span>
+              <span className="text-lg">{label}</span>
             </button>
           );
 
           return (
-            <div className={`min-h-screen ${
+            <div className={`min-h-screen relative overflow-hidden ${
               christmasMode 
-                ? 'bg-gradient-to-br from-red-900 via-green-900 to-red-900' 
+                ? 'bg-gradient-to-br from-red-950 via-green-950 to-red-950' 
                 : 'bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900'
-            } p-8 relative overflow-hidden`}>
+            }`}>
               
+              {/* Guirlandes lumineuses */}
+              {christmasMode && (
+                <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+                  <div className="flex justify-around py-4">
+                    {lights.map(light => (
+                      <div
+                        key={light.id}
+                        className="relative"
+                        style={{ 
+                          left: `${light.left}%`,
+                          animationDelay: `${light.delay}s`
+                        }}
+                      >
+                        <div 
+                          className="w-4 h-6 rounded-full animate-pulse shadow-lg"
+                          style={{
+                            backgroundColor: light.color,
+                            boxShadow: `0 0 20px ${light.color}, 0 0 40px ${light.color}`,
+                            animation: `twinkle 1.5s ease-in-out infinite ${light.delay}s`
+                          }}
+                        />
+                        <div 
+                          className="absolute top-0 w-0.5 h-8 bg-green-800"
+                          style={{ left: '50%', transform: 'translateX(-50%) translateY(-100%)' }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Flocons de neige améliorés */}
               {christmasMode && snowflakes.map(flake => (
                 <div
                   key={flake.id}
-                  className="absolute text-white opacity-70 pointer-events-none"
+                  className="absolute text-white pointer-events-none z-40"
                   style={{
                     left: `${flake.left}%`,
-                    top: '-20px',
-                    animation: `fall ${flake.duration}s linear infinite`,
+                    top: '-30px',
+                    opacity: flake.opacity,
+                    animation: `fall ${flake.duration}s linear infinite, drift ${flake.duration * 0.5}s ease-in-out infinite`,
                     animationDelay: `${flake.delay}s`,
-                    fontSize: `${flake.size}px`
+                    fontSize: `${flake.size}px`,
+                    filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.8))'
                   }}
                 >
                   ❄️
                 </div>
               ))}
 
+              {/* Traineau du Père Noël */}
+              {christmasMode && santaSleigh.show && (
+                <div
+                  className="fixed top-20 z-50 pointer-events-none text-6xl"
+                  style={{
+                    left: `${santaSleigh.x}px`,
+                    transition: 'left 0.05s linear',
+                    filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))'
+                  }}
+                >
+                  🎅🦌🦌🦌
+                </div>
+              )}
+
               <style>{`
                 @keyframes fall {
-                  to { transform: translateY(100vh); }
+                  to { 
+                    transform: translateY(100vh) rotate(360deg);
+                  }
                 }
-                @keyframes shimmer {
-                  0% { transform: translateX(-100%); }
-                  100% { transform: translateX(100%); }
+                @keyframes drift {
+                  0%, 100% { transform: translateX(0); }
+                  50% { transform: translateX(30px); }
+                }
+                @keyframes twinkle {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.3; transform: scale(0.8); }
+                }
+                @keyframes glow {
+                  0%, 100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5); }
+                  50% { text-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(255, 255, 255, 0.8); }
+                }
+                @keyframes shake {
+                  0%, 100% { transform: rotate(0deg); }
+                  25% { transform: rotate(-10deg); }
+                  75% { transform: rotate(10deg); }
                 }
               `}</style>
 
-              <div className="max-w-7xl mx-auto mb-8">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 flex items-center gap-3 flex-wrap">
-                      {christmasMode ? '🎅' : '📸'}
-                      {christmasMode && <span className="animate-spin">❄️</span>}
-                      <span>PDP Panel V1</span>
-                      {christmasMode && <span className="animate-bounce">🎁</span>}
-                    </h1>
-                    <p className="text-white/70 text-base md:text-lg">
-                      {christmasMode ? '🎄 Joyeux Noël ! Panel d\'administration' : 'Panel d\'administration du bot Discord'}
-                    </p>
-                  </div>
-                  
-                  <button
-                    onClick={() => setChristmasMode(!christmasMode)}
-                    className={`px-4 py-2 rounded-xl font-medium transition-all ${
-                      christmasMode
-                        ? 'bg-red-600 hover:bg-red-700 text-white'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white'
-                    }`}
-                  >
-                    {christmasMode ? '🎄 Mode Noël' : '✨ Mode Normal'}
-                  </button>
-                </div>
-              </div>
-
-              <div className="max-w-7xl mx-auto mb-8 flex gap-4 flex-wrap">
-                <TabButton name="home" icon={Home} label="Accueil" />
-                <TabButton name="import" icon={Upload} label="Import Pinterest" />
-                <TabButton name="gallery" icon={Image} label="Galerie" />
-                <TabButton name="stats" icon={BarChart3} label="Stats" />
-              </div>
-
-              <div className="max-w-7xl mx-auto">
-                {activeTab === 'import' && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
-                      {christmasMode ? '🎁 Importer des Photos depuis Pinterest' : '📸 Importer des Photos depuis Pinterest'}
-                    </h2>
-
-                    <div className="bg-blue-500/20 border border-blue-400/30 rounded-xl p-4 backdrop-blur-lg">
-                      <h3 className="text-white font-semibold mb-2">💡 Exemples de liens Pinterest valides :</h3>
-                      <div className="text-sm text-white/80 space-y-1">
-                        <div>• Page de recherche : <code className="bg-black/30 px-2 py-1 rounded">https://fr.pinterest.com/search/pins/?q=pfp+boy</code></div>
-                        <div>• Tableau : <code className="bg-black/30 px-2 py-1 rounded">https://fr.pinterest.com/username/board-name/</code></div>
-                      </div>
+              <div className="relative z-10 p-4 md:p-8">
+                {/* Header amélioré */}
+                <div className="max-w-7xl mx-auto mb-8">
+                  <div className="relative bg-gradient-to-r from-red-900/40 via-green-900/40 to-red-900/40 backdrop-blur-2xl border-4 border-yellow-400/50 rounded-3xl p-8 shadow-2xl">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-6xl animate-bounce">
+                      🎄
                     </div>
-
-                    <div>
-                      <label className="block text-white font-medium mb-2">Lien Pinterest</label>
-                      <input
-                        type="url"
-                        value={pinterestUrl}
-                        onChange={(e) => setPinterestUrl(e.target.value)}
-                        placeholder="https://fr.pinterest.com/search/pins/?q=pfp%20boy%20discord"
-                        className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
-                        disabled={importing}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-white font-medium mb-3">Catégorie</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                        {categories.map(cat => (
-                          <button
-                            key={cat.value}
-                            onClick={() => setCategory(cat.value)}
-                            disabled={importing}
-                            className={`px-4 py-3 rounded-xl font-medium transition-all disabled:opacity-50 ${
-                              category === cat.value
-                                ? christmasMode
-                                  ? 'bg-gradient-to-r from-red-500 to-green-500 text-white shadow-lg scale-105'
-                                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg scale-105'
-                                : 'bg-white/10 text-white hover:bg-white/20'
-                            }`}
-                          >
-                            {cat.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-white font-medium mb-3">
-                        Nombre de photos maximum : {photoCount}
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="100"
-                        value={photoCount}
-                        onChange={(e) => setPhotoCount(parseInt(e.target.value))}
-                        disabled={importing}
-                        className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-
-                    <button
-                      onClick={handleImport}
-                      disabled={importing || !pinterestUrl.trim()}
-                      className={`relative w-full px-8 py-6 rounded-2xl font-bold text-xl transition-all shadow-2xl disabled:opacity-50 overflow-hidden group ${
-                        christmasMode
-                          ? 'bg-gradient-to-r from-red-600 via-yellow-500 to-green-600'
-                          : 'bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600'
-                      } text-white hover:scale-105`}
-                    >
-                      <div className="absolute -top-3 -right-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-black rotate-12">
-                        ⭐ VIP
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="flex-1">
+                        <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-red-300 to-green-300 mb-3 flex items-center gap-4 flex-wrap"
+                            style={{ animation: 'glow 2s ease-in-out infinite' }}>
+                          <span className="animate-spin" style={{ animationDuration: '3s' }}>⭐</span>
+                          <span>PDP Panel V2</span>
+                          <span style={{ animation: 'shake 1s ease-in-out infinite' }}>🎁</span>
+                        </h1>
+                        <p className="text-yellow-100 text-xl md:text-2xl font-bold">
+                          🎅 Ho Ho Ho ! Joyeux Noël ! ✨
+                        </p>
                       </div>
                       
-                      <span className="relative z-10 flex items-center justify-center gap-3">
-                        {importing ? (
-                          <>
-                            <span className="animate-spin">⏳</span>
-                            Import en cours...
-                          </>
-                        ) : (
-                          <>
-                            <span className="animate-bounce">🎅</span>
-                            Démarrer le Scraping Pinterest
-                            <span className="animate-bounce">✨</span>
-                          </>
-                        )}
-                      </span>
-                    </button>
+                      <button
+                        onClick={() => setChristmasMode(!christmasMode)}
+                        className={`relative px-8 py-4 rounded-2xl font-black text-xl transition-all transform hover:scale-110 shadow-2xl ${
+                          christmasMode
+                            ? 'bg-gradient-to-r from-red-600 to-green-600 text-white'
+                            : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                        }`}
+                      >
+                        {christmasMode ? '🎄 Mode Noël ON' : '✨ Mode Normal'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-                    {importing && (
-                      <div className="space-y-2">
-                        <div className="w-full bg-white/20 rounded-full h-4 overflow-hidden">
-                          <div
-                            className={`h-full transition-all ${
-                              christmasMode
-                                ? 'bg-gradient-to-r from-red-500 to-green-500'
-                                : 'bg-gradient-to-r from-purple-500 to-pink-500'
-                            }`}
-                            style={{ width: `${progress}%` }}
+                {/* Navigation avec animations */}
+                <div className="max-w-7xl mx-auto mb-8 flex gap-4 flex-wrap justify-center">
+                  <TabButton name="home" icon={Home} label="Accueil" />
+                  <TabButton name="import" icon={Upload} label="Import Pinterest" />
+                  <TabButton name="gallery" icon={Image} label="Galerie" />
+                  <TabButton name="stats" icon={BarChart3} label="Stats" />
+                </div>
+
+                {/* SUITE DANS PARTIE 2... */}
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<PDPPanel />, document.getElementById('root'));
+    </script>
+</body>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDP Panel V2 - Gestionnaire de Photos Discord</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Upload = () => <span>📤</span>;
+        const Image = () => <span>🖼️</span>;
+        const BarChart3 = () => <span>📊</span>;
+        const Home = () => <span>🏠</span>;
+
+        const PDPPanel = () => {
+          const [activeTab, setActiveTab] = useState('home');
+          const [christmasMode, setChristmasMode] = useState(true);
+          const [pinterestUrl, setPinterestUrl] = useState('');
+          const [category, setCategory] = useState('boy');
+          const [photoCount, setPhotoCount] = useState(10);
+          const [importing, setImporting] = useState(false);
+          const [progress, setProgress] = useState(0);
+          const [currentMessage, setCurrentMessage] = useState('');
+          const [result, setResult] = useState(null);
+          const [snowflakes, setSnowflakes] = useState([]);
+          const [stats, setStats] = useState(null);
+          const [photos, setPhotos] = useState([]);
+          const [loading, setLoading] = useState(false);
+          const [lights, setLights] = useState([]);
+          const [santaSleigh, setSantaSleigh] = useState({ x: -200, show: false });
+          const [fireworks, setFireworks] = useState([]);
+
+          const API_URL = 'https://pfpbot-api.onrender.com';
+          const API_KEY = 'Nono1912';
+
+          useEffect(() => {
+            if (activeTab === 'home' || activeTab === 'stats') {
+              fetchStats();
+            }
+            if (activeTab === 'gallery') {
+              fetchPhotos();
+            }
+          }, [activeTab]);
+
+          const fetchStats = async () => {
+            try {
+              const response = await fetch(`${API_URL}/api/stats`, {
+                headers: { 'X-API-Key': API_KEY }
+              });
+              if (response.ok) {
+                const data = await response.json();
+                setStats(data);
+              }
+            } catch (error) {
+              console.error('Erreur stats:', error);
+            }
+          };
+
+          const fetchPhotos = async (page = 1) => {
+            setLoading(true);
+            try {
+              const response = await fetch(`${API_URL}/api/photos?page=${page}&limit=20`, {
+                headers: { 'X-API-Key': API_KEY }
+              });
+              if (response.ok) {
+                const data = await response.json();
+                setPhotos(data.photos || []);
+              }
+            } catch (error) {
+              console.error('Erreur photos:', error);
+            } finally {
+              setLoading(false);
+            }
+          };
+
+          useEffect(() => {
+            if (christmasMode) {
+              const flakes = Array.from({ length: 50 }, (_, i) => ({
+                id: i,
+                left: Math.random() * 100,
+                delay: Math.random() * 5,
+                duration: 8 + Math.random() * 7,
+                size: 12 + Math.random() * 25,
+                opacity: 0.3 + Math.random() * 0.7,
+              }));
+              setSnowflakes(flakes);
+
+              const lightColors = ['#ff0000', '#00ff00', '#ffff00', '#0000ff', '#ff00ff', '#00ffff'];
+              const newLights = Array.from({ length: 30 }, (_, i) => ({
+                id: i,
+                left: (i * 3.33) + (Math.random() * 2),
+                color: lightColors[Math.floor(Math.random() * lightColors.length)],
+                delay: Math.random() * 2
+              }));
+              setLights(newLights);
+            }
+          }, [christmasMode]);
+
+          useEffect(() => {
+            if (christmasMode) {
+              const interval = setInterval(() => {
+                setSantaSleigh(prev => {
+                  if (prev.x > window.innerWidth + 200) {
+                    return { x: -200, show: Math.random() < 0.3 };
+                  }
+                  return { ...prev, x: prev.x + 3 };
+                });
+              }, 50);
+              return () => clearInterval(interval);
+            }
+          }, [christmasMode]);
+
+          const createFireworks = () => {
+            const colors = ['#ff0000', '#00ff00', '#ffff00', '#0000ff', '#ff00ff'];
+            const newFireworks = Array.from({ length: 15 }, (_, i) => ({
+              id: Date.now() + i,
+              x: 50 + (Math.random() * 40 - 20),
+              y: 50,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              angle: (360 / 15) * i
+            }));
+            setFireworks(prev => [...prev, ...newFireworks]);
+            setTimeout(() => {
+              setFireworks(prev => prev.filter(f => !newFireworks.find(nf => nf.id === f.id)));
+            }, 2000);
+          };
+
+          const categories = [
+            { value: 'boy', label: '👦 Boy', gradient: 'from-blue-500 to-cyan-500' },
+            { value: 'girl', label: '👧 Girl', gradient: 'from-pink-500 to-purple-500' },
+            { value: 'anime', label: '🎌 Anime', gradient: 'from-red-500 to-orange-500' },
+            { value: 'aesthetic', label: '✨ Aesthetic', gradient: 'from-purple-500 to-indigo-500' },
+            { value: 'cute', label: '🥰 Cute', gradient: 'from-yellow-400 to-pink-400' },
+            { value: 'banner', label: '🎨 Banner', gradient: 'from-green-500 to-teal-500' },
+            { value: 'match', label: '💕 Match', gradient: 'from-red-400 to-pink-500' }
+          ];
+
+          const handleImport = async () => {
+            if (!pinterestUrl.trim()) {
+              alert('❌ Veuillez entrer un lien Pinterest');
+              return;
+            }
+            if (!pinterestUrl.includes('pinterest.com') && !pinterestUrl.includes('pin.it')) {
+              alert('❌ Le lien doit être un lien Pinterest valide');
+              return;
+            }
+
+            setImporting(true);
+            setProgress(0);
+            setResult(null);
+            setCurrentMessage('🎅 Initialisation magique...');
+
+            try {
+              const response = await fetch(`${API_URL}/api/pinterest/scrape`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-API-Key': API_KEY
+                },
+                body: JSON.stringify({
+                  pinterest_url: pinterestUrl,
+                  category: category,
+                  max_photos: photoCount
+                })
+              });
+
+              if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erreur lors du scraping');
+              }
+
+              const reader = response.body.getReader();
+              const decoder = new TextDecoder();
+              let buffer = '';
+
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                  if (line.startsWith('data: ')) {
+                    try {
+                      const data = JSON.parse(line.slice(6));
+                      
+                      if (data.type === 'progress') {
+                        setProgress(data.progress);
+                        setCurrentMessage(data.message || '✨ En cours...');
+                      } else if (data.type === 'complete') {
+                        setProgress(100);
+                        setCurrentMessage('🎉 Terminé !');
+                        createFireworks();
+                        setTimeout(() => {
+                          setImporting(false);
+                          setResult(data.result);
+                          fetchStats();
+                        }, 500);
+                      } else if (data.type === 'error') {
+                        throw new Error(data.message);
+                      }
+                    } catch (e) {
+                      console.error('Parse error:', e);
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              setImporting(false);
+              setProgress(0);
+              console.error('Erreur import:', error);
+              alert(`❌ ${error.message}`);
+            }
+          };
+
+          const TabButton = ({ name, icon: Icon, label }) => (
+            <button
+              onClick={() => setActiveTab(name)}
+              className={`relative flex items-center gap-2 px-8 py-4 rounded-2xl font-bold transition-all transform hover:scale-105 ${
+                activeTab === name
+                  ? christmasMode
+                    ? 'bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white shadow-2xl scale-105 animate-pulse'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-2xl scale-105'
+                  : christmasMode
+                  ? 'bg-red-900/30 text-red-100 hover:bg-red-900/40 backdrop-blur-lg border border-red-500/30'
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              {activeTab === name && christmasMode && (
+                <span className="absolute -top-2 -right-2 text-2xl animate-bounce">⭐</span>
+              )}
+              <Icon />
+              <span className="text-lg">{label}</span>
+            </button>
+          );
+
+          return (
+            <div className={`min-h-screen relative overflow-hidden ${
+              christmasMode 
+                ? 'bg-gradient-to-br from-red-950 via-green-950 to-red-950' 
+                : 'bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900'
+            }`}>
+              
+              {christmasMode && (
+                <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+                  <div className="flex justify-around py-4">
+                    {lights.map(light => (
+                      <div key={light.id} className="relative" style={{ left: `${light.left}%`, animationDelay: `${light.delay}s` }}>
+                        <div className="w-4 h-6 rounded-full animate-pulse shadow-lg"
+                          style={{
+                            backgroundColor: light.color,
+                            boxShadow: `0 0 20px ${light.color}, 0 0 40px ${light.color}`,
+                            animation: `twinkle 1.5s ease-in-out infinite ${light.delay}s`
+                          }}
+                        />
+                        <div className="absolute top-0 w-0.5 h-8 bg-green-800" style={{ left: '50%', transform: 'translateX(-50%) translateY(-100%)' }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {christmasMode && snowflakes.map(flake => (
+                <div key={flake.id} className="absolute text-white pointer-events-none z-40"
+                  style={{
+                    left: `${flake.left}%`,
+                    top: '-30px',
+                    opacity: flake.opacity,
+                    animation: `fall ${flake.duration}s linear infinite, drift ${flake.duration * 0.5}s ease-in-out infinite`,
+                    animationDelay: `${flake.delay}s`,
+                    fontSize: `${flake.size}px`,
+                    filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.8))'
+                  }}>
+                  ❄️
+                </div>
+              ))}
+
+              {christmasMode && santaSleigh.show && (
+                <div className="fixed top-20 z-50 pointer-events-none text-6xl"
+                  style={{
+                    left: `${santaSleigh.x}px`,
+                    transition: 'left 0.05s linear',
+                    filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))'
+                  }}>
+                  🎅🦌🦌🦌
+                </div>
+              )}
+
+              {fireworks.map(fw => (
+                <div key={fw.id} className="fixed z-50 pointer-events-none text-3xl"
+                  style={{
+                    left: `${fw.x}%`,
+                    top: `${fw.y}%`,
+                    animation: `explode 2s ease-out forwards`,
+                    transform: `rotate(${fw.angle}deg)`,
+                    color: fw.color
+                  }}>
+                  ✨
+                </div>
+              ))}
+
+              <style>{`
+                @keyframes fall {
+                  to { transform: translateY(100vh) rotate(360deg); }
+                }
+                @keyframes drift {
+                  0%, 100% { transform: translateX(0); }
+                  50% { transform: translateX(30px); }
+                }
+                @keyframes twinkle {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.3; transform: scale(0.8); }
+                }
+                @keyframes glow {
+                  0%, 100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5); }
+                  50% { text-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(255, 255, 255, 0.8); }
+                }
+                @keyframes shake {
+                  0%, 100% { transform: rotate(0deg); }
+                  25% { transform: rotate(-10deg); }
+                  75% { transform: rotate(10deg); }
+                }
+                @keyframes explode {
+                  to { transform: translate(200px, -200px) rotate(${Math.random() * 360}deg); opacity: 0; }
+                }
+              `}</style>
+
+              <div className="relative z-10 p-4 md:p-8">
+                <div className="max-w-7xl mx-auto mb-8">
+                  <div className="relative bg-gradient-to-r from-red-900/40 via-green-900/40 to-red-900/40 backdrop-blur-2xl border-4 border-yellow-400/50 rounded-3xl p-8 shadow-2xl">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-6xl animate-bounce">🎄</div>
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="flex-1">
+                        <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-red-300 to-green-300 mb-3 flex items-center gap-4 flex-wrap"
+                            style={{ animation: 'glow 2s ease-in-out infinite' }}>
+                          <span className="animate-spin" style={{ animationDuration: '3s' }}>⭐</span>
+                          <span>PDP Panel V2</span>
+                          <span style={{ animation: 'shake 1s ease-in-out infinite' }}>🎁</span>
+                        </h1>
+                        <p className="text-yellow-100 text-xl md:text-2xl font-bold">
+                          🎅 Ho Ho Ho ! Joyeux Noël ! ✨
+                        </p>
+                      </div>
+                      
+                      <button onClick={() => setChristmasMode(!christmasMode)}
+                        className={`relative px-8 py-4 rounded-2xl font-black text-xl transition-all transform hover:scale-110 shadow-2xl ${
+                          christmasMode
+                            ? 'bg-gradient-to-r from-red-600 to-green-600 text-white'
+                            : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                        }`}>
+                        {christmasMode ? '🎄 Mode Noël ON' : '✨ Mode Normal'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="max-w-7xl mx-auto mb-8 flex gap-4 flex-wrap justify-center">
+                  <TabButton name="home" icon={Home} label="Accueil" />
+                  <TabButton name="import" icon={Upload} label="Import Pinterest" />
+                  <TabButton name="gallery" icon={Image} label="Galerie" />
+                  <TabButton name="stats" icon={BarChart3} label="Stats" />
+                </div>
+
+                <div className="max-w-7xl mx-auto">
+                  {activeTab === 'import' && (
+                    <div className="space-y-6">
+                      <div className="relative bg-gradient-to-br from-red-900/50 via-green-900/50 to-red-900/50 backdrop-blur-xl border-2 border-yellow-400/40 rounded-3xl p-8 shadow-2xl">
+                        <div className="absolute -top-6 -right-6 text-5xl animate-spin" style={{ animationDuration: '3s' }}>🎁</div>
+                        <h2 className="text-3xl md:text-4xl font-black text-yellow-300 mb-6 flex items-center gap-3">
+                          <span className="animate-bounce">📸</span>
+                          Importer des Photos depuis Pinterest
+                          <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>✨</span>
+                        </h2>
+
+                        <div className="bg-blue-500/30 border-2 border-blue-400/50 rounded-2xl p-6 backdrop-blur-lg mb-6">
+                          <h3 className="text-white font-bold mb-3 text-lg flex items-center gap-2">
+                            <span className="text-2xl">💡</span> Exemples de liens Pinterest valides :
+                          </h3>
+                          <div className="text-sm text-white/90 space-y-2 ml-8">
+                            <div>• Page de recherche : <code className="bg-black/40 px-3 py-1 rounded-lg">https://fr.pinterest.com/search/pins/?q=pfp+boy</code></div>
+                            <div>• Tableau : <code className="bg-black/40 px-3 py-1 rounded-lg">https://fr.pinterest.com/username/board-name/</code></div>
+                          </div>
+                        </div>
+
+                        <div className="mb-6">
+                          <label className="block text-yellow-200 font-bold mb-3 text-lg">🔗 Lien Pinterest</label>
+                          <input type="url" value={pinterestUrl} onChange={(e) => setPinterestUrl(e.target.value)}
+                            placeholder="https://fr.pinterest.com/search/pins/?q=pfp%20boy%20discord"
+                            className="w-full px-6 py-4 rounded-2xl bg-white/20 border-2 border-white/40 text-white placeholder-white/60 focus:outline-none focus:ring-4 focus:ring-yellow-400/50 font-medium text-lg backdrop-blur-lg"
+                            disabled={importing}
                           />
                         </div>
-                        <div className="flex items-center justify-between text-white font-medium">
-                          <span>{progress}%</span>
-                          <span className="text-sm">{currentMessage}</span>
-                        </div>
-                      </div>
-                    )}
 
-                    {result && (
-                      <div className="rounded-2xl p-8 backdrop-blur-lg border-2 bg-gradient-to-br from-green-900/40 to-red-900/40 border-green-500/30">
-                        <div className="text-center mb-6">
-                          <div className="text-6xl mb-3 animate-bounce">🎁</div>
-                          <h3 className="text-2xl font-bold text-white mb-2">Import terminé !</h3>
-                        </div>
-                        
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="text-center p-4 bg-white/10 rounded-xl">
-                            <div className="text-3xl font-bold text-blue-400">{result.detected}</div>
-                            <div className="text-sm text-white/70">Détectées</div>
-                          </div>
-                          <div className="text-center p-4 bg-white/10 rounded-xl">
-                            <div className="text-3xl font-bold text-green-400">{result.inserted}</div>
-                            <div className="text-sm text-white/70">Insérées</div>
-                          </div>
-                          <div className="text-center p-4 bg-white/10 rounded-xl">
-                            <div className="text-3xl font-bold text-orange-400">{result.duplicates}</div>
-                            <div className="text-sm text-white/70">Doublons</div>
+                        <div className="mb-6">
+                          <label className="block text-yellow-200 font-bold mb-4 text-lg">🎨 Catégorie</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                            {categories.map(cat => (
+                              <button key={cat.value} onClick={() => setCategory(cat.value)} disabled={importing}
+                                className={`px-5 py-4 rounded-2xl font-bold transition-all disabled:opacity-50 transform hover:scale-105 ${
+                                  category === cat.value
+                                    ? `bg-gradient-to-r ${cat.gradient} text-white shadow-2xl scale-105 ring-4 ring-white/50`
+                                    : 'bg-white/10 text-white hover:bg-white/20 border-2 border-white/20'
+                                }`}>
+                                {cat.label}
+                              </button>
+                            ))}
                           </div>
                         </div>
 
-                        <div className="mt-4 p-4 bg-blue-500/20 rounded-xl">
-                          <div className="text-sm text-white/90">
-                            📤 {result.inserted} photos envoyées vers Discord !
-                          </div>
+                        <div className="mb-6">
+                          <label className="block text-yellow-200 font-bold mb-4 text-lg">
+                            📊 Nombre de photos maximum : <span className="text-yellow-400 text-2xl">{photoCount}</span>
+                          </label>
+                          <input type="range" min="1" max="100" value={photoCount}
+                            onChange={(e) => setPhotoCount(parseInt(e.target.value))}
+                            disabled={importing}
+                            className="w-full h-3 rounded-lg appearance-none cursor-pointer bg-gradient-to-r from-red-500 to-green-500"
+                          />
                         </div>
 
-                        <button
-                          onClick={() => {
-                            setResult(null);
-                            setPinterestUrl('');
-                          }}
-                          className="w-full mt-6 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium"
-                        >
-                          Nouvel import
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {activeTab === 'home' && (
-                  <div className="space-y-8">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 p-8">
-                      <h2 className="text-4xl font-bold text-white mb-3">
-                        {christmasMode ? '🎄 Bienvenue !' : '👋 Bienvenue !'}
-                      </h2>
-                      <p className="text-white/70 text-lg">
-                        Gérez vos photos de profil Discord en toute simplicité
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-lg border border-blue-400/30 rounded-xl p-6">
-                        <div className="text-3xl font-bold text-white">{stats ? stats.total_photos?.toLocaleString() : '...'}</div>
-                        <div className="text-sm text-white/70">Photos totales</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-lg border border-green-400/30 rounded-xl p-6">
-                        <div className="text-3xl font-bold text-white">{stats ? stats.recent_imports : '...'}</div>
-                        <div className="text-sm text-white/70">Imports ce mois</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 backdrop-blur-lg border border-purple-400/30 rounded-xl p-6">
-                        <div className="text-3xl font-bold text-white">{stats ? stats.categories?.length : '...'}</div>
-                        <div className="text-sm text-white/70">Catégories</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 backdrop-blur-lg border border-orange-400/30 rounded-xl p-6">
-                        <div className="text-3xl font-bold text-white">{stats ? stats.available_photos?.toLocaleString() : '...'}</div>
-                        <div className="text-sm text-white/70">Sur Discord</div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-semibold text-white mb-4">Actions rapides</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button
-                          onClick={() => setActiveTab('import')}
-                          className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all text-left"
-                        >
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
-                            📤
+                        <button onClick={handleImport} disabled={importing || !pinterestUrl.trim()}
+                          className={`relative w-full px-10 py-8 rounded-3xl font-black text-2xl transition-all shadow-2xl disabled:opacity-50 overflow-hidden group transform hover:scale-105 ${
+                            christmasMode
+                              ? 'bg-gradient-to-r from-red-600 via-yellow-500 to-green-600'
+                              : 'bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600'
+                          } text-white border-4 border-yellow-400/50`}>
+                          <div className="absolute -top-4 -right-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full text-sm font-black rotate-12 shadow-lg">
+                            ⭐ PREMIUM VIP
                           </div>
-                          <h4 className="text-lg font-semibold text-white mb-2">Importer des photos</h4>
-                          <p className="text-sm text-white/60">Ajoutez de nouvelles photos depuis Pinterest</p>
+                          
+                          <span className="relative z-10 flex items-center justify-center gap-4">
+                            {importing ? (
+                              <>
+                                <span className="animate-spin text-4xl">⏳</span>
+                                <span>Import en cours...</span>
+                                <span className="animate-spin text-4xl" style={{ animationDirection: 'reverse' }}>✨</span>
+                              </>
+                            ) : (
+                              <>
+                                <span className="animate-bounce text-4xl">🎅</span>
+                                <span>Démarrer le Scraping Pinterest</span>
+                                <span className="animate-bounce text-4xl" style={{ animationDelay: '0.2s' }}>✨</span>
+                              </>
+                            )}
+                          </span>
                         </button>
 
-                        <button
-                          onClick={() => setActiveTab('gallery')}
-                          className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all text-left"
-                        >
-                          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
-                            🖼️
-                          </div>
-                          <h4 className="text-lg font-semibold text-white mb-2">Gérer la galerie</h4>
-                          <p className="text-sm text-white/60">Parcourez et organisez vos photos</p>
-                        </button>
-
-                        <button
-                          onClick={() => setActiveTab('stats')}
-                          className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-6 hover:border-white/40 transition-all text-left"
-                        >
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-2xl">
-                            📊
-                          </div>
-                          <h4 className="text-lg font-semibold text-white mb-2">Voir les statistiques</h4>
-                          <p className="text-sm text-white/60">Analysez vos performances</p>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'gallery' && (
-                  <div className="space-y-6">
-                    <h2 className="text-3xl font-bold text-white mb-2">Galerie</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {loading ? (
-                        <div className="col-span-full text-center text-white py-12">
-                          <div className="animate-spin text-4xl mb-4">⏳</div>
-                          <div>Chargement...</div>
-                        </div>
-                      ) : photos.length > 0 ? (
-                        photos.map((photo) => (
-                          <div
-                            key={photo.id}
-                            className="aspect-square bg-white/10 rounded-xl overflow-hidden hover:scale-105 transition-transform"
-                          >
-                            <img 
-                              src={photo.url} 
-                              alt={photo.category}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-span-full text-center text-white/70 py-12">
-                          Aucune photo. Importez depuis Pinterest !
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'stats' && (
-                  <div className="space-y-6">
-                    <h2 className="text-3xl font-bold text-white mb-2">Statistiques</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                        <div className="text-4xl font-bold text-white mb-2">
-                          {stats ? stats.total_photos?.toLocaleString() : '0'}
-                        </div>
-                        <div className="text-sm text-white/70">Photos totales</div>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                        <div className="text-4xl font-bold text-white mb-2">
-                          {stats ? stats.recent_imports : '0'}
-                        </div>
-                        <div className="text-sm text-white/70">Imports ce mois</div>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                        <div className="text-4xl font-bold text-white mb-2">
-                          {stats ? stats.categories?.length : '0'}
-                        </div>
-                        <div className="text-sm text-white/70">Catégories actives</div>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-                        <div className="text-4xl font-bold text-white mb-2">
-                          {stats ? stats.success_rate : '0'}%
-                        </div>
-                        <div className="text-sm text-white/70">Taux de succès</div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6">
-                        <h3 className="text-xl font-semibold text-white mb-6">Photos par catégorie</h3>
-                        <div className="space-y-4">
-                          {categories.map((cat, i) => {
-                            const catStats = stats?.categories?.find(c => c.category === cat.value);
-                            const count = catStats?.count || 0;
-                            const total = stats?.total_photos || 1;
-                            const percentage = Math.round((count / total) * 100);
-                            
-                            return (
-                              <div key={i}>
-                                <div className="flex items-center justify-between text-sm text-white/70 mb-2">
-                                  <span>{cat.label}</span>
-                                  <span className="font-medium text-white">{count} photos</span>
-                                </div>
-                                <div className="w-full bg-white/10 rounded-full h-3">
-                                  <div
-                                    className="bg-gradient-to-r from-red-500 to-green-500 h-3 rounded-full transition-all duration-1000"
-                                    style={{ width: `${percentage}%` }}
-                                  ></div>
-                                </div>
+                        {importing && (
+                          <div className="mt-6 space-y-3">
+                            <div className="w-full bg-black/30 rounded-full h-6 overflow-hidden border-2 border-yellow-400/50">
+                              <div className="h-full transition-all bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 relative overflow-hidden"
+                                style={{ width: `${progress}%` }}>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+                            <div className="flex items-center justify-between text-yellow-200 font-bold text-lg bg-black/20 px-4 py-3 rounded-xl">
+                              <span className="text-2xl">{progress}%</span>
+                              <span className="flex items-center gap-2">
+                                <span className="animate-bounce">✨</span>
+                                {currentMessage}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {result && (
+                          <div className="mt-8 rounded-3xl p-8 backdrop-blur-xl border-4 border-green-400/50 bg-gradient-to-br from-green-900/50 to-red-900/50 shadow-2xl">
+                            <div className="text-center mb-8">
+                              <div className="text-8xl mb-4 animate-bounce">🎉</div>
+                              <h3 className="text-4xl font-black text-yellow-300 mb-3">Import terminé avec succès !</h3>
+                              <p className="text-green-200 text-xl">Ho Ho Ho ! Les cadeaux sont arrivés ! 🎁</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-3 gap-4 mb-6">
+                              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-lg border-2 border-blue-400/30 transform hover:scale-105 transition-all">
+                                <div className="text-5xl font-black text-blue-400">{result.detected}</div>
+                                <div className="text-sm text-white/80 mt-2 font-bold">🔍 Détectées</div>
+                              </div>
+                              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-lg border-2 border-green-400/30 transform hover:scale-105 transition-all">
+                                <div className="text-5xl font-black text-green-400">{result.inserted}</div>
+                                <div className="text-sm text-white/80 mt-2 font-bold">✅ Insérées</div>
+                              </div>
+                              <div className="text-center p-6 bg-white/10 rounded-2xl backdrop-blur-lg border-2 border-orange-400/30 transform hover:scale-105 transition-all">
+                                <div className="text-5xl font-black text-orange-400">{result.duplicates}</div>
+                                <div className="text-sm text-white/80 mt-2 font-bold">⚠️ Doublons</div>
+                              </div>
+                            </div>
+
+                            <div className="p-6 bg-blue-500/30 rounded-2xl border-2 border-blue-400/50 mb-6">
+                              <div className="text-lg text-white font-bold flex items-center gap-3">
+                                <span className="text-3xl">📤</span>
+                                {result.inserted} photos envoyées vers Discord avec succès !
+                                <span className="text-3xl">🎊</span>
+                              </div>
+                            </div>
+
+                            <button onClick={() => { setResult(null); setPinterestUrl(''); }}
+                              className="w-full px-8 py-5 rounded-2xl bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-black text-xl transform hover:scale-105 transition-all shadow-xl">
+                              🎁 Nouvel import
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'home' && (
+                    <div className="space-y-8">
+                      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-900/50 via-green-900/50 to-red-900/50 backdrop-blur-xl border-4 border-yellow-400/40 p-10 shadow-2xl">
+                        <div className="absolute -top-10 -right-10 text-9xl opacity-20 animate-spin" style={{ animationDuration: '20s' }}>🎄</div>
+                        <h2 className="text-5xl font-black text-yellow-300 mb-4 flex items-center gap-4" style={{ animation: 'glow 2s ease-in-out infinite' }}>
+                          <span className="text-6xl animate-bounce">👋</span>
+                          Bienvenue dans l'atelier du Père Noël !
+                        </h2>
+                        <p className="text-yellow-100 text-2xl font-bold">
+                          ✨ Gérez vos photos de profil Discord en toute magie ! 🎅
+                        </p>
                       </div>
 
-                      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-6">
-                        <h3 className="text-xl font-semibold text-white mb-6">Performance</h3>
-                        <div className="space-y-4">
-                          <div className="text-center p-4 bg-white/5 rounded-xl">
-                            <div className="text-3xl mb-2">⚡</div>
-                            <div className="text-2xl font-bold text-white mb-1">Rapide</div>
-                            <div className="text-sm text-white/70">Temps de réponse</div>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+                        {[
+                          { label: 'Photos totales', value: stats?.total_photos?.toLocaleString() || '...', icon: '📸', gradient: 'from-blue-500 to-blue-700', border: 'border-blue-400' },
+                          { label: 'Imports ce mois', value: stats?.recent_imports || '...', icon: '📥', gradient: 'from-green-500 to-green-700', border: 'border-green-400' },
+                          { label: 'Catégories', value: stats?.categories?.length || '...', icon: '🎨', gradient: 'from-purple-500 to-purple-700', border: 'border-purple-400' },
+                          { label: 'Sur Discord', value: stats?.ava
+</html>
+                           ilable_photos?.toLocaleString() || '...', icon: '💾', gradient: 'from-orange-500 to-orange-700', border: 'border-orange-400' }
+                        ].map((stat, i) => (
+                          <div key={i} className={`bg-gradient-to-br ${stat.gradient} backdrop-blur-lg border-4 ${stat.border} rounded-2xl p-8 shadow-2xl transform hover:scale-110 transition-all`}>
+                            <div className="text-6xl mb-3 animate-bounce" style={{ animationDelay: `${i * 0.2}s` }}>{stat.icon}</div>
+                            <div className="text-5xl font-black text-white mb-2">{stat.value}</div>
+                            <div className="text-lg text-white/90 font-bold">{stat.label}</div>
                           </div>
-                          <div className="text-center p-4 bg-white/5 rounded-xl">
-                            <div className="text-3xl mb-2">✅</div>
-                            <div className="text-2xl font-bold text-white mb-1">99.8%</div>
-                            <div className="text-sm text-white/70">Taux de succès</div>
+                        ))}
+                      </div>
+
+                      <div>
+                        <h3 className="text-3xl font-black text-yellow-300 mb-6 flex items-center gap-3">
+                          <span className="animate-pulse">⚡</span>
+                          Actions rapides
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          {[
+                            { tab: 'import', icon: '📤', title: 'Importer des photos', desc: 'Ajoutez de nouvelles photos depuis Pinterest', gradient: 'from-blue-500 to-purple-500' },
+                            { tab: 'gallery', icon: '🖼️', title: 'Gérer la galerie', desc: 'Parcourez et organisez vos photos', gradient: 'from-green-500 to-emerald-500' },
+                            { tab: 'stats', icon: '📊', title: 'Voir les statistiques', desc: 'Analysez vos performances', gradient: 'from-orange-500 to-red-500' }
+                          ].map((action, i) => (
+                            <button key={i} onClick={() => setActiveTab(action.tab)}
+                              className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border-4 border-white/30 rounded-3xl p-8 hover:border-yellow-400/70 transition-all text-left transform hover:scale-105 shadow-2xl">
+                              <div className={`w-16 h-16 bg-gradient-to-br ${action.gradient} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-125 transition-transform text-4xl shadow-xl`}>
+                                {action.icon}
+                              </div>
+                              <h4 className="text-2xl font-black text-white mb-3">{action.title}</h4>
+                              <p className="text-base text-white/80 font-medium">{action.desc}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'gallery' && (
+                    <div className="space-y-6">
+                      <div className="bg-gradient-to-br from-red-900/50 via-green-900/50 to-red-900/50 backdrop-blur-xl border-4 border-yellow-400/40 rounded-3xl p-8 shadow-2xl">
+                        <h2 className="text-4xl font-black text-yellow-300 mb-2 flex items-center gap-3">
+                          <span className="animate-bounce">🖼️</span>
+                          Galerie Magique
+                        </h2>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                        {loading ? (
+                          <div className="col-span-full text-center text-white py-20">
+                            <div className="animate-spin text-6xl mb-6">⏳</div>
+                            <div className="text-3xl font-bold">Chargement...</div>
+                          </div>
+                        ) : photos.length > 0 ? (
+                          photos.map((photo) => (
+                            <div key={photo.id}
+                              className="aspect-square bg-white/10 rounded-2xl overflow-hidden hover:scale-110 transition-transform shadow-2xl border-4 border-white/20 hover:border-yellow-400/70">
+                              <img src={photo.url} alt={photo.category} className="w-full h-full object-cover"/>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-span-full text-center text-yellow-200 py-20">
+                            <div className="text-6xl mb-4">📭</div>
+                            <div className="text-2xl font-bold">Aucune photo. Importez depuis Pinterest !</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'stats' && (
+                    <div className="space-y-6">
+                      <div className="bg-gradient-to-br from-red-900/50 via-green-900/50 to-red-900/50 backdrop-blur-xl border-4 border-yellow-400/40 rounded-3xl p-8 shadow-2xl">
+                        <h2 className="text-4xl font-black text-yellow-300 mb-2 flex items-center gap-3">
+                          <span className="animate-bounce">📊</span>
+                          Statistiques de l'Atelier
+                        </h2>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+                        {[
+                          { label: 'Photos totales', value: stats?.total_photos?.toLocaleString() || '0', icon: '📸' },
+                          { label: 'Imports ce mois', value: stats?.recent_imports || '0', icon: '📥' },
+                          { label: 'Catégories actives', value: stats?.categories?.length || '0', icon: '🎨' },
+                          { label: 'Taux de succès', value: (stats?.success_rate || '0') + '%', icon: '✅' }
+                        ].map((stat, i) => (
+                          <div key={i} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border-4 border-white/20 hover:border-yellow-400/50 transition-all transform hover:scale-105">
+                            <div className="text-5xl mb-4">{stat.icon}</div>
+                            <div className="text-5xl font-black text-white mb-2">{stat.value}</div>
+                            <div className="text-base text-white/80 font-bold">{stat.label}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="bg-white/10 backdrop-blur-lg border-4 border-white/30 rounded-3xl p-8 shadow-2xl">
+                          <h3 className="text-3xl font-black text-white mb-8 flex items-center gap-3">
+                            <span>🎨</span> Photos par catégorie
+                          </h3>
+                          <div className="space-y-5">
+                            {categories.map((cat, i) => {
+                              const catStats = stats?.categories?.find(c => c.category === cat.value);
+                              const count = catStats?.count || 0;
+                              const total = stats?.total_photos || 1;
+                              const percentage = Math.round((count / total) * 100);
+                              
+                              return (
+                                <div key={i}>
+                                  <div className="flex items-center justify-between text-base text-white/90 mb-3 font-bold">
+                                    <span>{cat.label}</span>
+                                    <span className="text-white text-xl">{count} photos</span>
+                                  </div>
+                                  <div className="w-full bg-white/20 rounded-full h-4 border-2 border-white/30">
+                                    <div className={`bg-gradient-to-r ${cat.gradient} h-full rounded-full transition-all duration-1000`}
+                                      style={{ width: `${percentage}%` }}></div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="bg-white/10 backdrop-blur-lg border-4 border-white/30 rounded-3xl p-8 shadow-2xl">
+                          <h3 className="text-3xl font-black text-white mb-8 flex items-center gap-3">
+                            <span>⚡</span> Performance
+                          </h3>
+                          <div className="space-y-6">
+                            <div className="text-center p-8 bg-white/10 rounded-2xl border-2 border-green-400/50 transform hover:scale-105 transition-all">
+                              <div className="text-6xl mb-4">⚡</div>
+                              <div className="text-4xl font-black text-white mb-3">Rapide</div>
+                              <div className="text-lg text-white/80 font-bold">Temps de réponse optimal</div>
+                            </div>
+                            <div className="text-center p-8 bg-white/10 rounded-2xl border-2 border-blue-400/50 transform hover:scale-105 transition-all">
+                              <div className="text-6xl mb-4">✅</div>
+                              <div className="text-4xl font-black text-white mb-3">99.8%</div>
+                              <div className="text-lg text-white/80 font-bold">Taux de succès</div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -608,4 +1062,3 @@
     </script>
 </body>
 </html>
-
